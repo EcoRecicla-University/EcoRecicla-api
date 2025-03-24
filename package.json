@@ -2,7 +2,7 @@
   "name": "ecorecicla-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main.js",
   "scripts": {
     "dev": "nodemon src/main.js"
   },
@@ -10,6 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parse": "^0.1.0",
+    "connect-multiparty": "^2.2.0",
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "mysql2": "^3.14.0"
   },
