@@ -1,8 +1,12 @@
 const mysql = require('mysql2');
 const express = require('express')
+const cors = require('cors');
 const app = express();
 
-// Banco de dados
+app.use(cors());
+
+// Banco de dados ---------------------------------------------------------------------------
+
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -31,18 +35,20 @@ const getValorBD = () => {
 };
 
 
+// Express --------------------------------------------------------------------------
+
 app.use(express.json())
 
-app.get('/', async (req, res) => {
+app.get('/api/login', async (req, res) => {
     try {
         const valorBD = await getValorBD();  // Aguarda a consulta ser concluída
         return res.json(valorBD);
-    } catch (error) {
+    } catch (error) {   // caso não concluir a consulta, mostar erro
         console.log(error);
         return res.status(500).json({ error: 'Erro ao obter dados' });
     }
 })
 
 app.listen(8080, () => {
-    console.log('Servidor iniciado na porta 3000: http://localhost:8080/')
+    console.log('Servidor iniciado na porta 3000: http://localhost:8080/api/login')
 })
