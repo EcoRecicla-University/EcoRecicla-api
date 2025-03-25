@@ -1,56 +1,48 @@
-// incluir dependencia MySQL
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const multpart = require('connect-multiparty');
-const multipart = require('connect-multiparty');
-
+const mysql = require('mysql2');
+const express = require('express')
 const app = express();
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
 
-const corsOptiopns = {
-    origin: '*',
-    optionsSuccessStatus: 200
-}
-app.use(cors(corsOptiopns))
-
-
-// Colocar const banco de dados
-const multipartMiddleware = multipart({ uploadDir: './uploads' })
-app.post('/upload', multipartMiddleware, (request, response) => {
-    const files = request.files;
-    console.log(files);
-    response.json({ message: files })
+// Banco de dados
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'ecorecicla-local',
+    database: 'ecorecicla-db'
 })
 
-app.use((err, request, response, next) => response.json({error: err.message}))
-
-app.listen(8000, () => {
-    console.log('Servidor porta 8000')
+connection.connect((err) => {
+    console.log('Realizada a conexão com sucesso')
 })
 
+const getValorBD = () => {
+
+    return new Promise((resolve, reject) => {
+
+        connection.query('SELECT email, senha FROM login', (err, rows) => {
+
+            if (err) {
+                reject('Erro na consulta: ' + err);
+            } else {
+                resolve(rows);
+            }
+
+        });
+    });
+};
 
 
-// const mysql = require('mysql2')
+app.use(express.json())
 
-// // criar conexão com banco de dados
-// const connection = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: 'ecorecicla-local',
-//     database: 'ecorecicla-db'
-// });
+app.get('/', async (req, res) => {
+    try {
+        const valorBD = await getValorBD();  // Aguarda a consulta ser concluída
+        return res.json(valorBD);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Erro ao obter dados' });
+    }
+})
 
-
-// connection.connect((err) => {
-//     console.log('Conexão aprovada')
-// })
-
-// connection.query('SELECT email, username, senha from login', (err, rows, fields) => {
-//     if(!err){
-//         console.log('Resultado: ', rows);
-//     } else{
-//         console.log('Consulta nao realizada')
-//     }
-// })
+app.listen(8080, () => {
+    console.log('Servidor iniciado na porta 3000: http://localhost:8080/')
+})
