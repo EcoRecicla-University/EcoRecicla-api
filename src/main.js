@@ -5,6 +5,13 @@ const bodyParser = require('express')
 const app = express();
 
 app.use(cors());
+app.use(express.json())
+
+// Porta do servidor
+app.listen(8080, () => {
+    console.log('Servidor iniciado na porta 3000: http://localhost:8080/api/login')
+})
+
 
 // Banco de dados ---------------------------------------------------------------------------
 
@@ -20,6 +27,7 @@ connection.connect((err) => {
 })
 
 
+// Pegar valor do banco de dados login  ------------------------------------------------------------
 function getValorBD (email, senha)  {
 
     return new Promise((resolve, reject) => {
@@ -37,21 +45,7 @@ function getValorBD (email, senha)  {
 };
 
 
-// Express --------------------------------------------------------------------------
-
-app.use(express.json())
-
-// app.get('/api/login', async (req, res) => {
-//     try {
-//         const valorBD = await getValorBD();  // Aguarda a consulta ser concluída
-//         return res.json(valorBD);
-//     } catch (error) {   // caso não concluir a consulta, mostar erro
-//         console.log(error);
-//         return res.status(500).json({ error: 'Erro ao obter dados' });
-//     }
-// })
-
-
+// Recebendo dados do login e enviando dados para o login ---------------------------------------------
 app.post('/api/login', async (req, res) => {
 
     const email = req.body.email;
@@ -77,8 +71,10 @@ app.post('/api/login', async (req, res) => {
             gravarTokenBD(token, username);
 
             return res.status(200).json({ success: true, token: token });
+
         } else {
             return res.status(401).json({ success: false, message: 'Usuário ou senha inválida' });
+            
         }
     } catch (error) {
         console.error('Erro ao buscar usuário:', error);
@@ -104,6 +100,60 @@ async function gravarTokenBD(token, username){
 
 }
 
-app.listen(8080, () => {
-    console.log('Servidor iniciado na porta 3000: http://localhost:8080/api/login')
+
+
+// Recuperar senha
+app.post('/api/recuperacao-senha', async (req, res) => {
+
+    const email = req.body.email
+
+    try {
+        const usuarioRecEncontrado = await getValorBDRec(email); // Obtém os usuários do banco
+
+        if (usuarioRecEncontrado) {
+
+            let senhaRandom = parseInt(Math.random() * 90000 + 10000).toString();
+
+            UpdateSenhaBD(usuarioRecEncontrado, senhaRandom);
+
+            return res.status(200).json({ message: 'Senha temporaria atualizada com sucesso. Verifique seu email.', success: true });
+
+        } else {
+            return res.status(401).json({ message: 'Usuario não encontrado na base de dados', success: false });
+            
+        }
+    } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+        return res.status(500).json({ error: 'Erro interno no servidor' });
+    }
+
 })
+
+function getValorBDRec(email){
+
+    return new Promise((resolve, reject) => {
+
+        connection.query('SELECT email, senha FROM login WHERE email = ?', [email], (err, rows) => {
+
+            if (err) {
+                reject('Erro na consulta: ' + err);
+            } else {
+                resolve(rows[0]);
+            }
+
+        });
+    });
+}
+
+function UpdateSenhaBD(usuarioRecEncontrado, senhaRandom){
+    return new Promise((resolve, reject) => {
+        connection.query('UPDATE login SET senha = ? WHERE email = ?', [senhaRandom, usuarioRecEncontrado.email], (err, result) => {
+            if (err) {
+                reject('Erro ao atualizar senha: ' + err);
+            } else {
+                resolve(result);
+                console.log('Senha atualizada com sucesso para o email:', usuarioRecEncontrado.email);
+            }
+        });
+    });
+}
