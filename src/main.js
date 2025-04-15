@@ -157,3 +157,4 @@ function UpdateSenhaBD(usuarioRecEncontrado, senhaRandom){
         });
     });
 }
+console.log('Gabriel');
