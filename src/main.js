@@ -1,15 +1,18 @@
 const mysql = require('mysql2');
 const express = require('express')
 const cors = require('cors');
-const bodyParser = require('express')
 const app = express();
+
+const apiCliente = require('./api/cliente.js');
 
 app.use(cors());
 app.use(express.json())
 
+const port = 8080;
+
 // Porta do servidor
-app.listen(8080, () => {
-    console.log('Servidor iniciado na porta 3000: http://localhost:8080/api/login')
+app.listen(port, () => {
+    console.log(`Servidor iniciado na porta ${port}: http://localhost:${port}/api`)
 })
 
 
@@ -157,3 +160,28 @@ function UpdateSenhaBD(usuarioRecEncontrado, senhaRandom){
         });
     });
 }
+
+app.get('/api/clientes', (req, res) => {
+    apiCliente.listarTodos()
+        .then(clientes => {
+            res.json(clientes);
+        })
+        .catch(err => {
+            console.error('Erro na consulta:', err);
+            return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+        });
+});
+
+app.get('/api/clientes/:id', (req, res) => {
+
+    const idCliente = req.params.id;
+
+    apiCliente.getClienteById(idCliente)
+        .then(cliente => {
+            res.json(cliente);
+        })
+        .catch(err => {
+            console.error('Erro na consulta:', err);
+            return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+        });
+});
