@@ -146,3 +146,19 @@ app.put('/api/clientes/:id', async (req, res) => {
         return res.status(500).json({ error: message });
     }
 });
+
+
+// Excluir cliente
+app.delete('/api/clientes/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        apiCliente.excluirCliente(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir cliente:', error);
+
+        const message = error.message ?? 'Erro ao excluir cliente'
+        return res.status(500).json({ error: message });
+    }
+});

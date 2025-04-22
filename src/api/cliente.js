@@ -46,7 +46,16 @@ class ApiCliente {
         const sql = 'INSERT INTO clientes '
         + '(Nome, Telefone, CPF, CNPJ, Pontos_Coleta, Numero_Pedidos, Tipo_Cliente, Data_Cadastro)'
         + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        const values = [nome, telefone, cpf, cnpj, pontoColeta, 0, tipoCliente, date];
+        const values = [
+            nome,
+            telefone,
+            cpf ?? null,
+            cnpj ?? null,
+            pontoColeta,
+            0,
+            tipoCliente,
+            date
+        ];
 
         connection.execute(sql, values);
     }
@@ -72,6 +81,14 @@ class ApiCliente {
         connection.execute(sql, values);
     }
 
+    excluirCliente(id) {
+
+        const sql = 'DELETE from clientes '
+        + 'WHERE ID_Cliente = ?'
+        const values = [id]
+
+        connection.execute(sql, values)
+    }
 }
 
 
