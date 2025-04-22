@@ -51,6 +51,27 @@ class ApiCliente {
         connection.execute(sql, values);
     }
 
+
+    editarCliente(id, nome, cpf, cnpj, telefone, pontoColeta, tipoCliente) {
+
+        clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+
+        const sql = 'UPDATE Clientes set '
+        + 'Nome = ?, Telefone = ?, CPF = ?, CNPJ = ?, Pontos_Coleta = ?, Tipo_Cliente = ? '
+        + 'WHERE ID_Cliente = ?'
+
+        const values = [
+            nome,
+            telefone,
+            cpf ?? null,
+            cnpj ?? null,
+            pontoColeta,
+            tipoCliente,
+            id
+        ]
+        connection.execute(sql, values);
+    }
+
 }
 
 

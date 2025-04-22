@@ -1,4 +1,3 @@
-const mysql = require('mysql2');
 const express = require('express')
 const cors = require('cors');
 const app = express();
@@ -83,8 +82,8 @@ app.get('/api/clientes', async (req, res) => {
         const clientes = await apiCliente.listarTodos()
         res.json(clientes);
 
-    } catch(e) {
-        console.error('Erro na consulta:', e);
+    } catch(error) {
+        console.error('Erro na consulta:', error);
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
     }
 });
@@ -98,14 +97,14 @@ app.get('/api/clientes/:id', async (req, res) => {
         const dadosCliente = await apiCliente.getClienteById(idCliente)
         res.json(dadosCliente);
 
-    } catch(e) {
-        console.error('Erro na consulta:', err);
+    } catch(error) {
+        console.error('Erro na consulta:', error);
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
     }
 });
 
 // Criar novo cliente
-app.post('/api/clientes/novo', async (req, res) => {
+app.post('/api/clientes', async (req, res) => {
 
     const nome = req.body.Nome;
     const cpf = req.body.CPF;
@@ -119,10 +118,31 @@ app.post('/api/clientes/novo', async (req, res) => {
         apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
         res.status(200).json({ success: true })
 
-    } catch(e) {
-        console.error('Erro ao inserir novo cliente:', e);
+    } catch(error) {
+        console.error('Erro ao inserir novo cliente:', error);
 
-        const message = e.message ?? 'Erro ao inserir novo cliente'
+        const message = error.message ?? 'Erro ao inserir novo cliente'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Editar cliente
+app.put('/api/clientes/:id', async (req, res) => {
+    const id = req.params.id
+    const nome = req.body.Nome
+    const cpf = req.body.CPF
+    const cnpj = req.body.CNPJ
+    const telefone = req.body.Telefone
+    const pontoColeta = req.body.Pontos_Coleta
+    const tipoCliente = req.body.Tipo_Cliente
+
+    try {
+        apiCliente.editarCliente(id, nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar cliente:', error);
+
+        const message = error.message ?? 'Erro ao editar cliente'
         return res.status(500).json({ error: message });
     }
 });

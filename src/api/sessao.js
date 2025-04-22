@@ -4,7 +4,7 @@ class ApiSessao {
     async criarSessao(token, username, dataExpiracaoToken) {
         try {
             const sql = 'INSERT INTO sessao (username, token, Token_Expiraacao) VALUES (?, ?, ?)';
-            const values = [username, token, tokenExpiracao];
+            const values = [username, token, dataExpiracaoToken];
 
             await connection.execute(sql, values);
             console.log('Token salvo no banco de dados com sucesso!');

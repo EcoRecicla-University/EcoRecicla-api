@@ -13,6 +13,9 @@ class ClienteValidator {
         if(!tipoCliente || tipoCliente.length == 0) {
             throw new Error('Tipo do cliente é obrigatório')
         }
+        if(!cpf && !cnpj){
+            throw new Error('CPF ou CNPJ é obrigatório')
+        }
     }
 
 }
