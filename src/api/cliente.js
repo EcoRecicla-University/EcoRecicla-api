@@ -1,4 +1,5 @@
 const connection = require('../core/connection.js');
+const clienteValidator = require('../validator/cliente.js')
 
 class ApiCliente {
 
@@ -34,6 +35,20 @@ class ApiCliente {
                 return resolve(null);
             });
         });
+    }
+
+    criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente){
+
+        clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+
+        const date = new Date()
+
+        const sql = 'INSERT INTO clientes '
+        + '(Nome, Telefone, CPF, CNPJ, Pontos_Coleta, Numero_Pedidos, Tipo_Cliente, Data_Cadastro)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [nome, telefone, cpf, cnpj, pontoColeta, 0, tipoCliente, date];
+
+        connection.execute(sql, values);
     }
 
 }

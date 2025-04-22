@@ -20,7 +20,9 @@ app.listen(port, () => {
     console.log(`Servidor iniciado na porta ${port}: http://localhost:${port}/api`)
 })
 
-// Recebendo dados do login e enviando dados para o login ---------------------------------------------
+
+// Login -----------------------------------------------------------------------------------------------------------------------
+
 app.post('/api/login', async (req, res) => {
     const { email, password: senha } = req.body;
 
@@ -47,7 +49,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-// Recuperar senha
+// Recuperar senha --------------------------------------
 app.post('/api/recuperacao-senha', async (req, res) => {
 
     const email = req.body.email;
@@ -71,6 +73,11 @@ app.post('/api/recuperacao-senha', async (req, res) => {
 
 })
 
+
+
+// Clientes -----------------------------------------------------------------------------------------------------------------------
+
+// Buscar todos os clientes
 app.get('/api/clientes', async (req, res) => {
     try {
         const clientes = await apiCliente.listarTodos()
@@ -82,6 +89,7 @@ app.get('/api/clientes', async (req, res) => {
     }
 });
 
+// Buscar cliente por ID
 app.get('/api/clientes/:id', async (req, res) => {
 
     try {
@@ -93,5 +101,28 @@ app.get('/api/clientes/:id', async (req, res) => {
     } catch(e) {
         console.error('Erro na consulta:', err);
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Criar novo cliente
+app.post('/api/clientes/novo', async (req, res) => {
+
+    const nome = req.body.Nome;
+    const cpf = req.body.CPF;
+    const cnpj = req.body.CNPJ;
+    const telefone = req.body.Telefone;
+    const pontoColeta = req.body.Pontos_Coleta;
+    const tipoCliente = req.body.Tipo_Cliente;
+
+    try {
+
+        apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        res.status(200).json({ success: true })
+
+    } catch(e) {
+        console.error('Erro ao inserir novo cliente:', e);
+
+        const message = e.message ?? 'Erro ao inserir novo cliente'
+        return res.status(500).json({ error: message });
     }
 });
