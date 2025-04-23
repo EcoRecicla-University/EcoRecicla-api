@@ -250,3 +250,83 @@ app.delete('/api/funcionario/:id', async (req, res) => {
         return res.status(500).json({ error: message });
     }
 });
+
+// Centros -----------------------------------------------------------------------------------------------------------------------
+
+// Buscar todos os centros
+app.get('/api/centro', async (req, res) => {
+    try {
+        const funcionario = await ApiCentros.listarTodos()
+        res.json(funcionario);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Buscar centro por ID
+app.get('/api/centro/:id', async (req, res) => {
+
+    try {
+        const idCentro = req.params.id;
+    
+        const dadosCentros = await ApiCentros.getCentroById(idCentro)
+        res.json(dadosCentros);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Criar novo centro
+app.post('/api/centro', async (req, res) => {
+
+    const endereco = req.body.Endereço;
+    const capaciArmaze = req.body.Capaci_Armaze;
+
+    try {
+
+        idCentro.criarNovoCentro(endereco, capaciArmaze)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo centro:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo centro'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Editar centro
+app.put('/api/centro/:id', async (req, res) => {
+    const id = req.params.id
+    const endereco = req.body.Endereço;
+    const capaciArmaze = req.body.Capaci_Armaze;
+
+    try {
+        idCentro.editarCentro(id, endereco, capaciArmaze)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar centro:', error);
+
+        const message = error.message ?? 'Erro ao editar centro'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Excluir centro
+app.delete('/api/centro/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        ApiCentros.excluirCentro(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir centro:', error);
+
+        const message = error.message ?? 'Erro ao excluir centro'
+        return res.status(500).json({ error: message });
+    }
+});
