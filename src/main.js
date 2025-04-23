@@ -1,126 +1,69 @@
-const mysql = require('mysql2');
 const express = require('express')
 const cors = require('cors');
-const bodyParser = require('express')
 const app = express();
+
+const utils = require('./core/utils.js')
+
+const apiCliente = require('./api/cliente.js');
+const apiLogin = require('./api/login.js');
+const apiSessao = require('./api/sessao.js')
+
 
 app.use(cors());
 app.use(express.json())
 
+const port = 8080;
+
 // Porta do servidor
-app.listen(8080, () => {
-    console.log('Servidor iniciado na porta 3000: http://localhost:8080/api/login')
+app.listen(port, () => {
+    console.log(`Servidor iniciado na porta ${port}: http://localhost:${port}/api`)
 })
 
 
-// Banco de dados ---------------------------------------------------------------------------
+// Login -----------------------------------------------------------------------------------------------------------------------
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'ecorecicla-local',
-    database: 'ecorecicla-db'
-})
-
-connection.connect((err) => {
-    console.log('Realizada a conexão com sucesso')
-})
-
-
-// Pegar valor do banco de dados login  ------------------------------------------------------------
-function getValorBD (email, senha)  {
-
-    return new Promise((resolve, reject) => {
-
-        connection.query('SELECT email, senha, username FROM login WHERE email = ? and senha = ?', [email, senha], (err, rows) => {
-
-            if (err) {
-                reject('Erro na consulta: ' + err);
-            } else {
-                resolve(rows[0]);
-            }
-
-        });
-    });
-};
-
-
-// Recebendo dados do login e enviando dados para o login ---------------------------------------------
 app.post('/api/login', async (req, res) => {
-
-    const email = req.body.email;
-    const senha = req.body.password;
-    let token = null
-    let username = null
+    const { email, password: senha } = req.body;
 
     try {
-        const usuarioEncontrado = await getValorBD(email, senha, token); // Obtém os usuários do banco
+        const usuarioEncontrado = await apiLogin.buscarUsuario(email, senha);
 
         if (usuarioEncontrado) {
-            username = usuarioEncontrado.username;
+            const username = usuarioEncontrado.username;
 
-            let random = Math.random()*12;
+            const tokenCriado = utils.gerarToken(email)
+            const dataExpiracaoToken = utils.definirDataExpiracaoToken()
 
-            let stringAleatoria = email + random
+            await apiSessao.criarSessao(tokenCriado, username, dataExpiracaoToken);
 
-            let stringwtring = stringAleatoria.toString()
-            const base64String = Buffer.from(stringwtring).toString('base64');
-
-            token = base64String;
-
-            gravarTokenBD(token, username);
-
-            return res.status(200).json({ success: true, token: token });
-
+            return res.status(200).json({ success: true, token: tokenCriado });
         } else {
             return res.status(401).json({ success: false, message: 'Usuário ou senha inválida' });
-            
         }
+
     } catch (error) {
         console.error('Erro ao buscar usuário:', error);
         return res.status(500).json({ error: 'Erro interno no servidor' });
     }
-
-})
-
-async function gravarTokenBD(token, username){
-    try {
-        const tokenExpiracao = new Date()
-        tokenExpiracao.setDate(tokenExpiracao.getDate() + 1)
-
-        const sql = 'INSERT INTO sessao (username, token, Token_Expiraacao) VALUES (?, ?, ?)';
-        const values = [username, token, tokenExpiracao];
-
-        await connection.execute(sql, values);
-
-        console.log('Token salvo no banco de dados com sucesso!');
-    } catch (error) {
-        console.error('Erro ao inserir token no banco de dados:', error);
-    }
-
-}
+});
 
 
-
-// Recuperar senha
+// Recuperar senha --------------------------------------
 app.post('/api/recuperacao-senha', async (req, res) => {
 
-    const email = req.body.email
+    const email = req.body.email;
 
     try {
-        const usuarioRecEncontrado = await getValorBDRec(email); // Obtém os usuários do banco
+        const usuarioRecEncontrado = await apiLogin.getUsuarioPorEmail(email);
 
         if (usuarioRecEncontrado) {
+            const senhaTemporaria = utils.gerarSenhaTemporaria()
+           
+            await apiLogin.atualizarSenha(email, senhaTemporaria);
 
-            let senhaRandom = parseInt(Math.random() * 90000 + 10000).toString();
-
-            UpdateSenhaBD(usuarioRecEncontrado, senhaRandom);
-
-            return res.status(200).json({ message: 'Senha temporaria atualizada com sucesso. Verifique seu email.', success: true });
-
+            return res.status(200).json({ message: 'Senha temporária atualizada com sucesso. Verifique seu email.', success: true });
         } else {
-            return res.status(401).json({ message: 'Usuario não encontrado na base de dados', success: false });
-            
+            return res.status(401).json({ message: 'Usuário não encontrado na base de dados', success: false });
         }
     } catch (error) {
         console.error('Erro ao buscar usuário:', error);
@@ -129,32 +72,93 @@ app.post('/api/recuperacao-senha', async (req, res) => {
 
 })
 
-function getValorBDRec(email){
 
-    return new Promise((resolve, reject) => {
 
-        connection.query('SELECT email, senha FROM login WHERE email = ?', [email], (err, rows) => {
+// Clientes -----------------------------------------------------------------------------------------------------------------------
 
-            if (err) {
-                reject('Erro na consulta: ' + err);
-            } else {
-                resolve(rows[0]);
-            }
+// Buscar todos os clientes
+app.get('/api/clientes', async (req, res) => {
+    try {
+        const clientes = await apiCliente.listarTodos()
+        res.json(clientes);
 
-        });
-    });
-}
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
 
-function UpdateSenhaBD(usuarioRecEncontrado, senhaRandom){
-    return new Promise((resolve, reject) => {
-        connection.query('UPDATE login SET senha = ? WHERE email = ?', [senhaRandom, usuarioRecEncontrado.email], (err, result) => {
-            if (err) {
-                reject('Erro ao atualizar senha: ' + err);
-            } else {
-                resolve(result);
-                console.log('Senha atualizada com sucesso para o email:', usuarioRecEncontrado.email);
-            }
-        });
-    });
-}
-console.log('Gabriel');
+// Buscar cliente por ID
+app.get('/api/clientes/:id', async (req, res) => {
+
+    try {
+        const idCliente = req.params.id;
+    
+        const dadosCliente = await apiCliente.getClienteById(idCliente)
+        res.json(dadosCliente);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Criar novo cliente
+app.post('/api/clientes', async (req, res) => {
+
+    const nome = req.body.Nome;
+    const cpf = req.body.CPF;
+    const cnpj = req.body.CNPJ;
+    const telefone = req.body.Telefone;
+    const pontoColeta = req.body.Pontos_Coleta;
+    const tipoCliente = req.body.Tipo_Cliente;
+
+    try {
+
+        apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo cliente:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo cliente'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Editar cliente
+app.put('/api/clientes/:id', async (req, res) => {
+    const id = req.params.id
+    const nome = req.body.Nome
+    const cpf = req.body.CPF
+    const cnpj = req.body.CNPJ
+    const telefone = req.body.Telefone
+    const pontoColeta = req.body.Pontos_Coleta
+    const tipoCliente = req.body.Tipo_Cliente
+
+    try {
+        apiCliente.editarCliente(id, nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar cliente:', error);
+
+        const message = error.message ?? 'Erro ao editar cliente'
+        return res.status(500).json({ error: message });
+    }
+});
+
+
+// Excluir cliente
+app.delete('/api/clientes/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        apiCliente.excluirCliente(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir cliente:', error);
+
+        const message = error.message ?? 'Erro ao excluir cliente'
+        return res.status(500).json({ error: message });
+    }
+});
