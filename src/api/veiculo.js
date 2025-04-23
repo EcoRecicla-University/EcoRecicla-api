@@ -26,6 +26,20 @@ class ApiVeiculo {
         // idMotorista
         connection.execute(sql, values);
     }
+
+    listarTodos() {
+
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT * FROM Veiculos', (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
 }
 
 module.exports = new ApiVeiculo();

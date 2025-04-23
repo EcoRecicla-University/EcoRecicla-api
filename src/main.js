@@ -190,3 +190,15 @@ app.post('/api/veiculos', async (req, res) => {
         return res.status(500).json({ error: message });
     }
 });
+
+// Buscar todos
+app.get('/api/veiculos', async (req, res) => {
+    try {
+        const veiculos = await apiVeiculo.listarTodos()
+        res.json(veiculos);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
