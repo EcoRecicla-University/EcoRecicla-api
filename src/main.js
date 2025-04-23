@@ -6,7 +6,8 @@ const utils = require('./core/utils.js')
 
 const apiCliente = require('./api/cliente.js');
 const apiLogin = require('./api/login.js');
-const apiSessao = require('./api/sessao.js')
+const apiSessao = require('./api/sessao.js');
+const apiVeiculo = require('./api/veiculo.js');
 
 
 app.use(cors());
@@ -162,6 +163,30 @@ app.delete('/api/clientes/:id', async (req, res) => {
         console.error('Erro ao excluir cliente:', error);
 
         const message = error.message ?? 'Erro ao excluir cliente'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Veiculo -----------------------------------------------------------------------------------------------------------------------
+// Criar novo veiculo
+app.post('/api/veiculos', async (req, res) => {
+
+    const placa = req.body.Placa;
+    const modelo = req.body.Modelo;
+    const quilometragem = req.body.Quilometragem;
+    const renavam = req.body.Renavam;
+    const capacidade = req.body.Capacidade_em_Kg;
+    // const idMotorista = req.body.ID_Motorista;
+
+    try {
+
+        apiVeiculo.criarNovoVeiculo(placa, modelo, quilometragem, renavam, capacidade)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo veiculo:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo veiculo'
         return res.status(500).json({ error: message });
     }
 });
