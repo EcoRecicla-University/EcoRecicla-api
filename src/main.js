@@ -30,11 +30,14 @@ app.post('/api/login', async (req, res) => {
 
         if (usuarioEncontrado) {
             const username = usuarioEncontrado.username;
+            const idLogin = usuarioEncontrado.ID_Login;
+
+            console.log(usuarioEncontrado)
 
             const tokenCriado = utils.gerarToken(email)
             const dataExpiracaoToken = utils.definirDataExpiracaoToken()
 
-            await apiSessao.criarSessao(tokenCriado, username, dataExpiracaoToken);
+            await apiSessao.criarSessao(tokenCriado, username, dataExpiracaoToken, idLogin);
 
             return res.status(200).json({ success: true, token: tokenCriado });
         } else {

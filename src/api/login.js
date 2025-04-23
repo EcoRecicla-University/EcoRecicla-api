@@ -4,7 +4,7 @@ class apiLogin {
     
     async buscarUsuario(email, senha) {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT username FROM login WHERE email = ? AND senha = ?';
+            const query = 'SELECT username, ID_Login FROM login WHERE email = ? AND senha = ?';
             connection.query(query, [email, senha], (err, results) => {
                 if (err) return reject('Erro ao consultar o banco: ' + err);
                 return resolve(results[0] || null);
