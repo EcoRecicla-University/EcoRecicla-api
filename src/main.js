@@ -162,3 +162,91 @@ app.delete('/api/clientes/:id', async (req, res) => {
         return res.status(500).json({ error: message });
     }
 });
+
+// Funcionarios -----------------------------------------------------------------------------------------------------------------------
+
+// Buscar todos os funcionarios
+app.get('/api/funcionario', async (req, res) => {
+    try {
+        const funcionario = await ApiFuncionario.listarTodos()
+        res.json(funcionario);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Buscar funcionario por ID
+app.get('/api/funcionario/:id', async (req, res) => {
+
+    try {
+        const idFuncionario = req.params.id;
+    
+        const dadosFuncionario = await ApiFuncionario.getFuncionarioById(idFuncionario)
+        res.json(dadosFuncionario);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Criar novo funcionario
+app.post('/api/funcionario', async (req, res) => {
+
+    const nome = req.body.Nome;
+    const dataNascimento = req.body.Data_Nascimento;
+    const cpf = req.body.cpf;
+    const rg = req.body.Telefone;
+    const estadoCivil = req.body.estadoCivil;
+    const Telefone = req.body.Telefone;
+
+    try {
+
+        idFuncionario.criarNovoFuncionario(nome, dataNascimento, cpf, rg, estadoCivil, Telefone)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo funcionario:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo funcionario'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Editar funcionario
+app.put('/api/funcionario/:id', async (req, res) => {
+    const id = req.params.id
+    const nome = req.body.Nome;
+    const dataNascimento = req.body.Data_Nascimento;
+    const cpf = req.body.cpf;
+    const rg = req.body.Telefone;
+    const estadoCivil = req.body.estadoCivil;
+    const Telefone = req.body.Telefone;
+
+    try {
+        idFuncionario.editarFuncionario(id, nome, dataNascimento, cpf, rg, estadoCivil, Telefone)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar funcionario:', error);
+
+        const message = error.message ?? 'Erro ao editar funcionario'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Excluir funcionario
+app.delete('/api/funcionario/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        apiCliente.excluirFuncionario(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir funcionario:', error);
+
+        const message = error.message ?? 'Erro ao excluir funcionario'
+        return res.status(500).json({ error: message });
+    }
+});

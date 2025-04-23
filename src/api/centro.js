@@ -57,7 +57,7 @@ class ApiCentro {
 
         CentroValidator.validarCriacao(endereco, capaciArmaze)
 
-        const sql = 'UPDATE Centro set '
+        const sql = 'UPDATE Centros set '
         + 'Endereço = ?, Capaci_Armaze = ? '
         + 'WHERE ID_Centro = ?'
 
