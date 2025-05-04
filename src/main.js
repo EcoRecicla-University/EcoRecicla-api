@@ -8,7 +8,7 @@ const apiCliente = require('./api/cliente.js');
 const apiLogin = require('./api/login.js');
 const apiSessao = require('./api/sessao.js');
 const apiVeiculo = require('./api/veiculo.js');
-
+const apiFuncionarios = require('./api/funcionarios.js');
 
 app.use(cors());
 app.use(express.json())
@@ -168,6 +168,7 @@ app.delete('/api/clientes/:id', async (req, res) => {
 });
 
 // Veiculo -----------------------------------------------------------------------------------------------------------------------
+
 // Criar novo veiculo
 app.post('/api/veiculos', async (req, res) => {
 
@@ -191,7 +192,7 @@ app.post('/api/veiculos', async (req, res) => {
     }
 });
 
-// Buscar todos
+// Buscar todos os veiculos
 app.get('/api/veiculos', async (req, res) => {
     try {
         const veiculos = await apiVeiculo.listarTodos()
@@ -202,6 +203,24 @@ app.get('/api/veiculos', async (req, res) => {
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
     }
 });
+
+
+// Funcionarios -----------------------------------------------------------------------------------------------------------------------
+
+app.get('/api/funcionarios', async (req, res) => {
+    try {
+        const funcionarios = await apiFuncionarios.listarTodos()
+        res.json(funcionarios);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Motoristas -----------------------------------------------------------------------------------------------------------------------
+
+// Buscar todos os motoristas
 
 // Buscar funcionario por ID
 app.get('/api/funcionario/:id', async (req, res) => {
