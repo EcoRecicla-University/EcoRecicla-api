@@ -17,6 +17,26 @@ class ApiFuncionarios {
 
     }
 
+    criarNovoFuncionario(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil){
+
+        // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+
+        const sql = 'INSERT INTO funcionarios '
+        + '(Nome, Data_Nascimento, CPF, RG, Data_Contratacao, Estado_Civil, Telefone)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const values = [
+            nome,
+            dataNascimento,
+            cpf,
+            rg,
+            dataContratacao,
+            estadoCivil,
+            telefone,
+        ];
+
+        connection.execute(sql, values);
+    }
+
 }
 
 module.exports = new ApiFuncionarios();

@@ -207,6 +207,7 @@ app.get('/api/veiculos', async (req, res) => {
 
 // Funcionarios -----------------------------------------------------------------------------------------------------------------------
 
+// Buscar todos os funcionarios
 app.get('/api/funcionarios', async (req, res) => {
     try {
         const funcionarios = await apiFuncionarios.listarTodos()
@@ -215,6 +216,30 @@ app.get('/api/funcionarios', async (req, res) => {
     } catch(error) {
         console.error('Erro na consulta:', error);
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Cadastrar novo funcionario
+app.post('/api/funcionarios', async (req, res) => {
+
+    const nome = req.body.Nome;
+    const cpf = req.body.CPF;
+    const rg = req.body.RG;
+    const telefone = req.body.Telefone;
+    const dataNascimento = req.body.Data_Nascimento;
+    const dataContratacao = req.body.Data_Contratacao;
+    const estadoCivil = req.body.Estado_Civil;
+
+    try {
+
+        apiFuncionarios.criarNovoFuncionario(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo funcionario:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo funcionario'
+        return res.status(500).json({ error: message });
     }
 });
 
