@@ -6,7 +6,8 @@ const utils = require('./core/utils.js')
 
 const apiCliente = require('./api/cliente.js');
 const apiLogin = require('./api/login.js');
-const apiSessao = require('./api/sessao.js')
+const apiSessao = require('./api/sessao.js');
+const ApiMovimen = require('./api/movimen.js')
 
 
 app.use(cors());
@@ -408,3 +409,36 @@ app.delete('/api/categoria/:id', async (req, res) => {
         return res.status(500).json({ error: message });
     }
 });
+
+// MOVIMENTO DE ESTOQUE
+
+// Criar novo movimento de estoque
+app.post('/api/movimen', async (req, res) => {
+
+    const quantidade = req.body.quantidade;
+    const dataEntrada = req.body.dataEntrada;
+    try {
+
+        ApiMovimen.criarNovaMovimen(quantidade, dataEntrada)
+        
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir nova movimentação:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo centro'
+        return res.status(500).json({ error: message });
+    }
+    
+});
+
+    app.get('/api/movimen', async (req, res) => {
+        const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
+        try {
+            res.json(idsColeta)
+        } catch(error) {
+            console.error('Erro ao buscar chave de coleta', error);
+            
+            return res.status(500).json({ error: message });
+        }
+    })

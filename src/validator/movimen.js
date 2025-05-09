@@ -1,15 +1,13 @@
 class MovimenValidator {
 
-    validarCriacao(dataEntrada, quantEntrada) {
+    validarCriacao(quantidade, dataEntrada) {
+        if(!quantidade || quantidade.length == 0) {
+            throw new Error('Quantidade é obrigatório')
+        }
         if(!dataEntrada || dataEntrada.length == 0) {
-            throw new Error('Data de entrada é obrigatório')
-        }
-        if(!quantEntrada || quantEntrada.length == 0) {
-            throw new Error('Quantidade que entrará é obrigatório')
-        }
-        
+            throw new Error('Data de entrada que entrará é obrigatório')
+        }   
     }
-
 }
 
 module.exports = new MovimenValidator()

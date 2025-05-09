@@ -37,33 +37,32 @@ class ApiMovimen {
         });
     }
 
-    criarNovoMovimen(dataEntrada, quantEntrada){
+    criarNovaMovimen(quantidade, dataEntrada){
 
-        MovimenValidator.validarCriacao(dataEntrada, quantEntrada)
+        MovimenValidator.validarCriacao(quantidade, dataEntrada)
 
         const sql = 'INSERT INTO movimentacoes '
-        + '(Data_Entrada, Capaci_Armaze)'
+        + '(Quantidade, Data_Entrada)'
         + ' VALUES (?, ?)';
         const values = [
+            quantidade,
             dataEntrada,
-            quantEntrada,
-            
         ];
 
         connection.execute(sql, values);
     }
 
-    editarCentro(dataEntrada, quantEntrada) {
+    editarMovimen(quantidade, dataEntrada) {
 
-        MovimenValidator.validarCriacao(dataEntrada, quantEntrada)
+        MovimenValidator.validarCriacao(quantidade, dataEntrada)
 
         const sql = 'UPDATE movimentacoes set'
-        + 'Data_Entrada = ?, Quantidade_Entra = ? '
+        + 'Quantidade = ?, Data_Entrada = ?'
         + 'WHERE ID_Movimen = ?'
 
         const values = [
+            quantidade,
             dataEntrada,
-            quantEntrada,
             id
         ]
         connection.execute(sql, values);
@@ -76,6 +75,12 @@ class ApiMovimen {
         const values = [id]
 
         connection.execute(sql, values)
+    }
+
+    buscarColeta(idsColeta){
+
+        const sql = 'SELECT ID_Coleta_Tipo_Residuo FROM movimentacoes'
+        connection.execute(sql)
     }
 }
 
