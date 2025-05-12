@@ -300,8 +300,6 @@ app.delete('/api/funcionarios/:id', async (req, res) => {
 
 // Motoristas -----------------------------------------------------------------------------------------------------------------------
 
-// Buscar todos os motoristas
-
 // Cadastrar novo motorista
 app.post('/api/motoristas', async (req, res) => {
 
@@ -328,6 +326,21 @@ app.get('/api/motoristas', async (req, res) => {
     try {
         const motoristas = await ApiMotoristas.listarTodos();
         res.json(motoristas);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Buscar funcionario por ID
+app.get('/api/motoristas/:id', async (req, res) => {
+
+    try {
+        const idMotorista = req.params.id;
+    
+        const dadosMotorista = await ApiMotoristas.getMotoristaById(parseInt(idMotorista))
+        res.json(dadosMotorista);
 
     } catch(error) {
         console.error('Erro na consulta:', error);

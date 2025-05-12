@@ -34,6 +34,26 @@ class ApiMotoristas {
         });
 
     }
+
+    getMotoristaById(idMotorista) {
+    
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT f.Nome AS Nome, m.* FROM motoristas m INNER JOIN funcionarios f ON m.ID_Funci = f.ID_Funci WHERE m.ID_Motorista = ?', [idMotorista], (err, row) => {
+            
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                const motorista = row[0];
+                
+                if (motorista) {
+                    return resolve(motorista);
+                }
+                
+                return resolve(null);
+            });
+        });
+    }
 }
 
 module.exports = new ApiMotoristas();
