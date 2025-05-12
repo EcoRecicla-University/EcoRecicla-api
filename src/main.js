@@ -229,10 +229,11 @@ app.post('/api/funcionarios', async (req, res) => {
     const dataNascimento = req.body.Data_Nascimento;
     const dataContratacao = req.body.Data_Contratacao;
     const estadoCivil = req.body.Estado_Civil;
+    const email = req.body.Email;
 
     try {
 
-        apiFuncionarios.criarNovoFuncionario(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil)
+        apiFuncionarios.criarNovoFuncionario(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil, email)
         res.status(200).json({ success: true })
 
     } catch(error) {
