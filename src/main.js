@@ -260,6 +260,7 @@ app.get('/api/funcionarios/:id', async (req, res) => {
     }
 });
 
+// Editar Funcionario
 app.put('/api/funcionarios/:id', (req, res) => {
     const id = req.params.id;
     const nome = req.body.Nome;
@@ -278,6 +279,21 @@ app.put('/api/funcionarios/:id', (req, res) => {
         console.error('Erro ao editar funcionario:', error);
 
         const message = error.message ?? 'Erro ao editar funcionario'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Deletar usuario
+app.delete('/api/funcionarios/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        apiFuncionarios.excluirFuncionario(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir cliente:', error);
+
+        const message = error.message ?? 'Erro ao excluir cliente'
         return res.status(500).json({ error: message });
     }
 });

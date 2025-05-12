@@ -86,6 +86,15 @@ class ApiFuncionarios {
         ]
         connection.execute(sql, values);
     }
+
+    excluirFuncionario(id) {
+
+        const sql = 'UPDATE funcionarios set Funcionario_Ativo = ?'
+        + ' WHERE ID_Funci = ?'
+        const values = ['I', id]
+
+        connection.execute(sql, values)
+    }
 }
 
 module.exports = new ApiFuncionarios();
