@@ -9,6 +9,7 @@ const apiLogin = require('./api/login.js');
 const apiSessao = require('./api/sessao.js');
 const apiVeiculo = require('./api/veiculo.js');
 const apiFuncionarios = require('./api/funcionarios.js');
+const ApiMotoristas = require('./api/motoristas.js');
 
 app.use(cors());
 app.use(express.json())
@@ -248,156 +249,35 @@ app.post('/api/funcionarios', async (req, res) => {
 
 // Buscar todos os motoristas
 
-// Buscar funcionario por ID
-app.get('/api/funcionario/:id', async (req, res) => {
+// Cadastrar novo motorista
+app.post('/api/motoristas', async (req, res) => {
+
+    const idFuncionario = req.body.ID_Funci;
+    const categoria = req.body.Categoria;
+    const numeroRogistro = req.body.Numero_Registro;
+    const validadeCarteira = req.body.Validade;
 
     try {
-        const idFuncionario = req.params.id;
-    
-        const dadosFuncionario = await ApiFuncionario.getFuncionarioById(idFuncionario)
-        res.json(dadosFuncionario);
+
+        ApiMotoristas.criarNovoMotorista(idFuncionario, categoria, numeroRogistro, validadeCarteira)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo motorista:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo motorista'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Buscar todos os motoristas
+app.get('/api/motoristas', async (req, res) => {
+    try {
+        const motoristas = await ApiMotoristas.listarTodos();
+        res.json(motoristas);
 
     } catch(error) {
         console.error('Erro na consulta:', error);
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
-    }
-});
-
-// Criar novo funcionario
-app.post('/api/funcionario', async (req, res) => {
-
-    const nome = req.body.Nome;
-    const dataNascimento = req.body.Data_Nascimento;
-    const cpf = req.body.cpf;
-    const rg = req.body.Telefone;
-    const estadoCivil = req.body.estadoCivil;
-    const Telefone = req.body.Telefone;
-
-    try {
-
-        idFuncionario.criarNovoFuncionario(nome, dataNascimento, cpf, rg, estadoCivil, Telefone)
-        res.status(200).json({ success: true })
-
-    } catch(error) {
-        console.error('Erro ao inserir novo funcionario:', error);
-
-        const message = error.message ?? 'Erro ao inserir novo funcionario'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Editar funcionario
-app.put('/api/funcionario/:id', async (req, res) => {
-    const id = req.params.id
-    const nome = req.body.Nome;
-    const dataNascimento = req.body.Data_Nascimento;
-    const cpf = req.body.cpf;
-    const rg = req.body.Telefone;
-    const estadoCivil = req.body.estadoCivil;
-    const Telefone = req.body.Telefone;
-
-    try {
-        idFuncionario.editarFuncionario(id, nome, dataNascimento, cpf, rg, estadoCivil, Telefone)
-        res.status(200).json({ success: true })
-    } catch(error) {
-        console.error('Erro ao editar funcionario:', error);
-
-        const message = error.message ?? 'Erro ao editar funcionario'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Excluir funcionario
-app.delete('/api/funcionario/:id', async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        apiCliente.excluirFuncionario(id)
-        res.status(200).json({ success: true })
-    } catch(error){
-        console.error('Erro ao excluir funcionario:', error);
-
-        const message = error.message ?? 'Erro ao excluir funcionario'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Centros -----------------------------------------------------------------------------------------------------------------------
-
-// Buscar todos os centros
-app.get('/api/centro', async (req, res) => {
-    try {
-        const funcionario = await ApiCentros.listarTodos()
-        res.json(funcionario);
-
-    } catch(error) {
-        console.error('Erro na consulta:', error);
-        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
-    }
-});
-
-// Buscar centro por ID
-app.get('/api/centro/:id', async (req, res) => {
-
-    try {
-        const idCentro = req.params.id;
-    
-        const dadosCentros = await ApiCentros.getCentroById(idCentro)
-        res.json(dadosCentros);
-
-    } catch(error) {
-        console.error('Erro na consulta:', error);
-        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
-    }
-});
-
-// Criar novo centro
-app.post('/api/centro', async (req, res) => {
-
-    const endereco = req.body.Endereço;
-    const capaciArmaze = req.body.Capaci_Armaze;
-
-    try {
-
-        idCentro.criarNovoCentro(endereco, capaciArmaze)
-        res.status(200).json({ success: true })
-
-    } catch(error) {
-        console.error('Erro ao inserir novo centro:', error);
-
-        const message = error.message ?? 'Erro ao inserir novo centro'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Editar centro
-app.put('/api/centro/:id', async (req, res) => {
-    const id = req.params.id
-    const endereco = req.body.Endereço;
-    const capaciArmaze = req.body.Capaci_Armaze;
-
-    try {
-        idCentro.editarCentro(id, endereco, capaciArmaze)
-        res.status(200).json({ success: true })
-    } catch(error) {
-        console.error('Erro ao editar centro:', error);
-
-        const message = error.message ?? 'Erro ao editar centro'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Excluir centro
-app.delete('/api/centro/:id', async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        ApiCentros.excluirCentro(id)
-        res.status(200).json({ success: true })
-    } catch(error){
-        console.error('Erro ao excluir centro:', error);
-
-        const message = error.message ?? 'Erro ao excluir centro'
-        return res.status(500).json({ error: message });
     }
 });
