@@ -6,7 +6,9 @@ class ApiCliente {
     listarTodos() {
 
         return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM clientes', (err, rows) => {
+            const sql = 'SELECT * FROM clientes WHERE Cliente_Ativo = ?';
+            
+            connection.query(sql, ['A'],(err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -44,8 +46,8 @@ class ApiCliente {
         const date = new Date()
 
         const sql = 'INSERT INTO clientes '
-        + '(Nome, Telefone, CPF, CNPJ, Pontos_Coleta, Numero_Pedidos, Tipo_Cliente, Data_Cadastro)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        + '(Nome, Telefone, CPF, CNPJ, Pontos_Coleta, Numero_Pedidos, Tipo_Cliente, Data_Cadastro, Cliente_Ativo)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             nome,
             telefone,
@@ -54,7 +56,8 @@ class ApiCliente {
             pontoColeta,
             0,
             tipoCliente,
-            date
+            date,
+            'A'
         ];
 
         connection.execute(sql, values);
@@ -83,9 +86,9 @@ class ApiCliente {
 
     excluirCliente(id) {
 
-        const sql = 'DELETE from clientes '
-        + 'WHERE ID_Cliente = ?'
-        const values = [id]
+        const sql = 'UPDATE Clientes set Cliente_Ativo = ?'
+        + ' WHERE ID_Cliente = ?'
+        const values = ['I', id]
 
         connection.execute(sql, values)
     }
