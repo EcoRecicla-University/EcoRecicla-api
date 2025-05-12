@@ -45,6 +45,47 @@ class ApiFuncionarios {
         connection.execute(sql, values);
     }
 
+    getFuncionarioById(idFuncionario) {
+    
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT * FROM funcionarios WHERE ID_Funci = ?', [idFuncionario], (err, row) => {
+            
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                const funcionario = row[0];
+                
+                if (funcionario) {
+                    return resolve(funcionario);
+                }
+                
+                return resolve(null);
+            });
+        });
+    }
+
+    editarFuncionario(id, nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil, email) {
+
+        // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+
+        const sql = 'UPDATE funcionarios set '
+        + 'Nome = ?, Telefone = ?, CPF = ?, RG = ?, Data_Nascimento = ?, Data_Contratacao = ?, Estado_Civil = ?, Email = ? '
+        + 'WHERE ID_Funci = ?'
+
+        const values = [
+            nome,
+            telefone,
+            cpf,
+            rg,
+            new Date(dataNascimento),
+            new Date(dataContratacao),
+            estadoCivil,
+            email,
+            id
+        ]
+        connection.execute(sql, values);
+    }
 }
 
 module.exports = new ApiFuncionarios();

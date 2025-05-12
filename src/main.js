@@ -245,6 +245,43 @@ app.post('/api/funcionarios', async (req, res) => {
     }
 });
 
+// Buscar funcionario por ID
+app.get('/api/funcionarios/:id', async (req, res) => {
+
+    try {
+        const idFuncionario = req.params.id;
+    
+        const dadosFuncionario = await apiFuncionarios.getFuncionarioById(parseInt(idFuncionario))
+        res.json(dadosFuncionario);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+app.put('/api/funcionarios/:id', (req, res) => {
+    const id = req.params.id;
+    const nome = req.body.Nome;
+    const cpf = req.body.CPF;
+    const rg = req.body.RG;
+    const telefone = req.body.Telefone;
+    const dataNascimento = req.body.Data_Nascimento;
+    const dataContratacao = req.body.Data_Contratacao;
+    const estadoCivil = req.body.Estado_Civil;
+    const email = req.body.Email;
+
+    try {
+        apiFuncionarios.editarFuncionario(parseInt(id), nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil, email)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar funcionario:', error);
+
+        const message = error.message ?? 'Erro ao editar funcionario'
+        return res.status(500).json({ error: message });
+    }
+});
+
 // Motoristas -----------------------------------------------------------------------------------------------------------------------
 
 // Buscar todos os motoristas
