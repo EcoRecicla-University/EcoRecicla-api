@@ -54,6 +54,24 @@ class ApiMotoristas {
             });
         });
     }
+
+    editarMotorista(idMotorista, idFuncionario, categoria, numeroRegistro, validade) {
+
+        // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+
+        const sql = 'UPDATE motoristas set '
+        + 'ID_Funci = ?, Numero_Registro = ?, Categoria = ?, Validade = ? '
+        + 'WHERE ID_Motorista = ?'
+
+        const values = [
+            idFuncionario,
+            numeroRegistro,
+            categoria,
+            new Date(validade),
+            idMotorista
+        ]
+        connection.execute(sql, values);
+    }
 }
 
 module.exports = new ApiMotoristas();

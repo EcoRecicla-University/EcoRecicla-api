@@ -347,3 +347,22 @@ app.get('/api/motoristas/:id', async (req, res) => {
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
     }
 });
+
+// Editar Motorista
+app.put('/api/motoristas/:id', (req, res) => {
+    const idMotorista = req.params.id;
+    const idFuncionario = req.body.ID_Funci;
+    const categoria = req.body.Categoria;
+    const numeroRegistro = req.body.Numero_Registro;
+    const validade = req.body.Validade;
+
+    try {
+        ApiMotoristas.editarMotorista(parseInt(idMotorista), parseInt(idFuncionario), categoria, numeroRegistro, validade)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar motorista:', error);
+
+        const message = error.message ?? 'Erro ao editar motorista'
+        return res.status(500).json({ error: message });
+    }
+});
