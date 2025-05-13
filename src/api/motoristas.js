@@ -72,6 +72,14 @@ class ApiMotoristas {
         ]
         connection.execute(sql, values);
     }
+
+    excluirMotorista(id) {
+
+        const sql = 'DELETE from motoristas WHERE ID_Motorista = ?'
+        const values = [id]
+
+        connection.execute(sql, values)
+    }
 }
 
 module.exports = new ApiMotoristas();

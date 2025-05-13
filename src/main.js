@@ -291,9 +291,9 @@ app.delete('/api/funcionarios/:id', async (req, res) => {
         apiFuncionarios.excluirFuncionario(id)
         res.status(200).json({ success: true })
     } catch(error){
-        console.error('Erro ao excluir cliente:', error);
+        console.error('Erro ao excluir funcionario:', error);
 
-        const message = error.message ?? 'Erro ao excluir cliente'
+        const message = error.message ?? 'Erro ao excluir funcionario'
         return res.status(500).json({ error: message });
     }
 });
@@ -363,6 +363,21 @@ app.put('/api/motoristas/:id', (req, res) => {
         console.error('Erro ao editar motorista:', error);
 
         const message = error.message ?? 'Erro ao editar motorista'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Deletar motorista
+app.delete('/api/motoristas/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        ApiMotoristas.excluirMotorista(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir motorista:', error);
+
+        const message = error.message ?? 'Erro ao excluir motorista'
         return res.status(500).json({ error: message });
     }
 });
