@@ -10,6 +10,7 @@ const apiSessao = require('./api/sessao.js');
 const apiVeiculo = require('./api/veiculo.js');
 const apiFuncionarios = require('./api/funcionarios.js');
 const ApiMotoristas = require('./api/motoristas.js');
+const ApiMovimen = require('./api/movimen.js')
 
 app.use(cors());
 app.use(express.json())
@@ -333,18 +334,18 @@ app.get('/api/motoristas', async (req, res) => {
     }
 });
 
-// Buscar funcionario por ID
-app.get('/api/motoristas/:id', async (req, res) => {
+// Deletar motorista
+app.delete('/api/motoristas/:id', async (req, res) => {
+    const id = req.params.id;
 
     try {
-        const idMotorista = req.params.id;
-    
-        const dadosMotorista = await ApiMotoristas.getMotoristaById(parseInt(idMotorista))
-        res.json(dadosMotorista);
+        ApiMotoristas.excluirMotorista(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir motorista:', error);
 
-    } catch(error) {
-        console.error('Erro na consulta:', error);
-        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+        const message = error.message ?? 'Erro ao excluir motorista'
+        return res.status(500).json({ error: message });
     }
 });
 
@@ -363,116 +364,6 @@ app.put('/api/motoristas/:id', (req, res) => {
         console.error('Erro ao editar motorista:', error);
 
         const message = error.message ?? 'Erro ao editar motorista'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Editar centro
-app.put('/api/centro/:id', async (req, res) => {
-    const id = req.params.id
-    const endereco = req.body.Endereço;
-    const capaciArmaze = req.body.Capaci_Armaze;
-
-    try {
-        idCentro.editarCentro(id, endereco, capaciArmaze)
-        res.status(200).json({ success: true })
-    } catch(error) {
-        console.error('Erro ao editar centro:', error);
-
-        const message = error.message ?? 'Erro ao editar categoria'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Excluir centro
-app.delete('/api/centro/:id', async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        ApiCentros.excluirCentro(id)
-        res.status(200).json({ success: true })
-    } catch(error){
-        console.error('Erro ao excluir centro:', error);
-
-        const message = error.message ?? 'Erro ao excluir centro'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// CATEGORIA -----------------------------------------------------------------------------------------------------------------------
-
-// Buscar todas as categorias
-app.get('/api/categoria', async (req, res) => {
-    try {
-        const categoria = await ApiCategoria.listarTodos()
-        res.json(categoria);
-
-    } catch(error) {
-        console.error('Erro na consulta:', error);
-        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
-    }
-});
-
-// Buscar categoria por ID
-app.get('/api/categoria/:id', async (req, res) => {
-
-    try {
-        const idCentro = req.params.id;
-    
-        const dadosCategoria = await ApiCategoria.getCategoriaById(idCategoria)
-        res.json(dadosCategoria);
-
-    } catch(error) {
-        console.error('Erro na consulta:', error);
-        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
-    }
-});
-
-// Criar nova categoria
-app.post('/api/categoria', async (req, res) => {
-
-    const categoria = req.body.Categoria;
-
-    try {
-
-        idCategoria.criarNovoCategoria(categoria)
-        res.status(200).json({ success: true })
-
-    } catch(error) {
-        console.error('Erro ao inserir nova categoria:', error);
-
-        const message = error.message ?? 'Erro ao inserir nova categoria'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Editar categoria
-app.put('/api/categoria/:id', async (req, res) => {
-    const id = req.params.id
-    const categoria = req.body.Categoria;
-
-    try {
-        idCategoria.editarCategoria(id, categoria)
-        res.status(200).json({ success: true })
-    } catch(error) {
-        console.error('Erro ao editar categoria:', error);
-
-        const message = error.message ?? 'Erro ao editar categoria'
-        return res.status(500).json({ error: message });
-    }
-});
-
-// Excluir categoria
-app.delete('/api/categoria/:id', async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        ApiCategoria.excluirCategoria(id)
-        res.status(200).json({ success: true })
-    } catch(error){
-        console.error('Erro ao excluir categoria:', error);
-
-        const message = error.message ?? 'Erro ao excluir categoria'
         return res.status(500).json({ error: message });
     }
 });
