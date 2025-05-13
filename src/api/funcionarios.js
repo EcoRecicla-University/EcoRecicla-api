@@ -1,6 +1,7 @@
 const connection = require('../core/connection.js');
 
 const utils = require('../core/utils.js')
+const ApiMotoristas = require('./motoristas.js');
 
 class ApiFuncionarios {
 
@@ -87,7 +88,13 @@ class ApiFuncionarios {
         connection.execute(sql, values);
     }
 
-    excluirFuncionario(id) {
+    async excluirFuncionario(id) {
+
+        const funcionarioMotorista = await ApiMotoristas.buscarPorFuncionario(id)
+
+        if(funcionarioMotorista.length > 0){
+            throw new Error('Não pode excluir esse funcionário porque ele é um motorista.')
+        }
 
         const sql = 'UPDATE funcionarios set Funcionario_Ativo = ?'
         + ' WHERE ID_Funci = ?'

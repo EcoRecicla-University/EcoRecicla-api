@@ -35,6 +35,22 @@ class ApiMotoristas {
 
     }
 
+    buscarPorFuncionario(id){
+
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * from motoristas WHERE ID_Funci = ?';
+            connection.query(sql, [id], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+
+    }
+
     getMotoristaById(idMotorista) {
     
         return new Promise((resolve, reject) => {

@@ -288,7 +288,7 @@ app.delete('/api/funcionarios/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
-        apiFuncionarios.excluirFuncionario(id)
+        await apiFuncionarios.excluirFuncionario(id)
         res.status(200).json({ success: true })
     } catch(error){
         console.error('Erro ao excluir funcionario:', error);
