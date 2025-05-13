@@ -367,17 +367,145 @@ app.put('/api/motoristas/:id', (req, res) => {
     }
 });
 
-// Deletar motorista
-app.delete('/api/motoristas/:id', async (req, res) => {
-    const id = req.params.id;
+// Editar centro
+app.put('/api/centro/:id', async (req, res) => {
+    const id = req.params.id
+    const endereco = req.body.Endereço;
+    const capaciArmaze = req.body.Capaci_Armaze;
 
     try {
-        ApiMotoristas.excluirMotorista(id)
+        idCentro.editarCentro(id, endereco, capaciArmaze)
         res.status(200).json({ success: true })
-    } catch(error){
-        console.error('Erro ao excluir motorista:', error);
+    } catch(error) {
+        console.error('Erro ao editar centro:', error);
 
-        const message = error.message ?? 'Erro ao excluir motorista'
+        const message = error.message ?? 'Erro ao editar categoria'
         return res.status(500).json({ error: message });
     }
 });
+
+// Excluir centro
+app.delete('/api/centro/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        ApiCentros.excluirCentro(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir centro:', error);
+
+        const message = error.message ?? 'Erro ao excluir centro'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// CATEGORIA -----------------------------------------------------------------------------------------------------------------------
+
+// Buscar todas as categorias
+app.get('/api/categoria', async (req, res) => {
+    try {
+        const categoria = await ApiCategoria.listarTodos()
+        res.json(categoria);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Buscar categoria por ID
+app.get('/api/categoria/:id', async (req, res) => {
+
+    try {
+        const idCentro = req.params.id;
+    
+        const dadosCategoria = await ApiCategoria.getCategoriaById(idCategoria)
+        res.json(dadosCategoria);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Criar nova categoria
+app.post('/api/categoria', async (req, res) => {
+
+    const categoria = req.body.Categoria;
+
+    try {
+
+        idCategoria.criarNovoCategoria(categoria)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir nova categoria:', error);
+
+        const message = error.message ?? 'Erro ao inserir nova categoria'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Editar categoria
+app.put('/api/categoria/:id', async (req, res) => {
+    const id = req.params.id
+    const categoria = req.body.Categoria;
+
+    try {
+        idCategoria.editarCategoria(id, categoria)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar categoria:', error);
+
+        const message = error.message ?? 'Erro ao editar categoria'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Excluir categoria
+app.delete('/api/categoria/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        ApiCategoria.excluirCategoria(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir categoria:', error);
+
+        const message = error.message ?? 'Erro ao excluir categoria'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// MOVIMENTO DE ESTOQUE
+
+// Criar novo movimento de estoque
+app.post('/api/movimen', async (req, res) => {
+
+    const quantidade = req.body.quantidade;
+    const dataEntrada = req.body.dataEntrada;
+    try {
+
+        ApiMovimen.criarNovaMovimen(quantidade, dataEntrada)
+        
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir nova movimentação:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo centro'
+        return res.status(500).json({ error: message });
+    }
+    
+});
+
+    app.get('/api/movimen', async (req, res) => {
+        const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
+        try {
+            res.json(idsColeta)
+        } catch(error) {
+            console.error('Erro ao buscar chave de coleta', error);
+            
+            return res.status(500).json({ error: message });
+        }
+    })

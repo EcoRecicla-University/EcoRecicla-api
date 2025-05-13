@@ -61,6 +61,7 @@ class ApiCliente {
         ];
 
         connection.execute(sql, values);
+        console.log('Gravado')
     }
 
 
