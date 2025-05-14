@@ -1,10 +1,12 @@
 const connection = require('../core/connection.js');
 
+const motoristaValidator = require('../validator/motorista.js')
+
 class ApiMotoristas {
 
     criarNovoMotorista(idFuncionario, categoria, numeroRogistro, validadeCarteira){
 
-        // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        motoristaValidator.validarCriacao(idFuncionario, categoria, numeroRogistro, validadeCarteira)
 
         const sql = 'INSERT INTO motoristas '
         + '(ID_Funci, Numero_Registro, Categoria, Validade)'
