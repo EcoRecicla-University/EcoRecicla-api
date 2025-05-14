@@ -9,8 +9,8 @@ class ApiVeiculo {
         veiculoValidator.validarCriacaoVeiculo(placa, modelo, quilometragem, renavam, capacidade)
 
         const sql = 'INSERT INTO Veiculos'
-        + '(Placa, Modelo, Quilometragem, Renavam, Capacidade_em_Kg, ID_Motorista)'
-        + ' VALUES (?, ?, ?, ?, ?, ?)';
+        + '(Placa, Modelo, Quilometragem, Renavam, Capacidade_em_Kg)'
+        + ' VALUES (?, ?, ?, ?, ?)';
 
         
         const values = [
@@ -18,8 +18,7 @@ class ApiVeiculo {
             modelo,
             quilometragem,
             renavam,
-            capacidade,
-            1
+            capacidade
         ];
 
         console.log(values)

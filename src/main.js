@@ -179,7 +179,6 @@ app.post('/api/veiculos', async (req, res) => {
     const quilometragem = req.body.Quilometragem;
     const renavam = req.body.Renavam;
     const capacidade = req.body.Capacidade_em_Kg;
-    // const idMotorista = req.body.ID_Motorista;
 
     try {
 
