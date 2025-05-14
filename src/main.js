@@ -432,13 +432,24 @@ app.post('/api/movimen', async (req, res) => {
     
 });
 
-    app.get('/api/movimen', async (req, res) => {
-        const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
-        try {
-            res.json(idsColeta)
-        } catch(error) {
-            console.error('Erro ao buscar chave de coleta', error);
-            
-            return res.status(500).json({ error: message });
-        }
-    })
+app.get('/api/movimen', async (req, res) => {
+    const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
+    try {
+        res.json(idsColeta)
+    } catch(error) {
+        console.error('Erro ao buscar chave de coleta', error);
+        
+        return res.status(500).json({ error: message });
+    }
+})
+
+app.get('/api/movimen', async (req, res) => {
+    try {
+        const movimentacoes = await ApiMovimen.listarTodos()
+        res.json(movimentacoes);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
