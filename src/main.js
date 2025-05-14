@@ -348,6 +348,21 @@ app.delete('/api/motoristas/:id', async (req, res) => {
     }
 });
 
+// Buscar motorista por ID
+app.get('/api/motoristas/:id', async (req, res) => {
+
+    try {
+        const idMotorista = req.params.id;
+    
+        const dadosMotorista = await ApiMotoristas.getMotoristaById(parseInt(idMotorista))
+        res.json(dadosMotorista);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
 // Editar Motorista
 app.put('/api/motoristas/:id', (req, res) => {
     const idMotorista = req.params.id;
