@@ -39,38 +39,38 @@ class ApiCliente {
         });
     }
 
-    criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente){
+    criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente){
 
-        clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, tipoCliente)
 
         const date = new Date()
 
         const sql = 'INSERT INTO clientes '
-        + '(Nome, Telefone, CPF, CNPJ, Pontos_Coleta, Numero_Pedidos, Tipo_Cliente, Data_Cadastro, Cliente_Ativo)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        + '(Nome, Telefone, CPF, CNPJ, Numero_Pedidos, Tipo_Cliente, Data_Cadastro, Cliente_Ativo)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             nome,
             telefone,
             cpf ?? null,
             cnpj ?? null,
-            pontoColeta,
             0,
             tipoCliente,
             date,
             'A'
         ];
 
+        console.log(values)
         connection.execute(sql, values);
         console.log('Gravado')
     }
 
 
-    editarCliente(id, nome, cpf, cnpj, telefone, pontoColeta, tipoCliente) {
+    editarCliente(id, nome, cpf, cnpj, telefone, tipoCliente) {
 
-        clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, tipoCliente)
 
         const sql = 'UPDATE Clientes set '
-        + 'Nome = ?, Telefone = ?, CPF = ?, CNPJ = ?, Pontos_Coleta = ?, Tipo_Cliente = ? '
+        + 'Nome = ?, Telefone = ?, CPF = ?, CNPJ = ?, Tipo_Cliente = ? '
         + 'WHERE ID_Cliente = ?'
 
         const values = [
@@ -78,7 +78,6 @@ class ApiCliente {
             telefone,
             cpf ?? null,
             cnpj ?? null,
-            pontoColeta,
             tipoCliente,
             id
         ]

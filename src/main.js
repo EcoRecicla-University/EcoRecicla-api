@@ -116,12 +116,11 @@ app.post('/api/clientes', async (req, res) => {
     const cpf = req.body.CPF;
     const cnpj = req.body.CNPJ;
     const telefone = req.body.Telefone;
-    const pontoColeta = req.body.Pontos_Coleta;
     const tipoCliente = req.body.Tipo_Cliente;
 
     try {
 
-        apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente)
         res.status(200).json({ success: true })
 
     } catch(error) {
@@ -139,11 +138,10 @@ app.put('/api/clientes/:id', async (req, res) => {
     const cpf = req.body.CPF
     const cnpj = req.body.CNPJ
     const telefone = req.body.Telefone
-    const pontoColeta = req.body.Pontos_Coleta
     const tipoCliente = req.body.Tipo_Cliente
 
     try {
-        apiCliente.editarCliente(id, nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        apiCliente.editarCliente(id, nome, cpf, cnpj, telefone, tipoCliente)
         res.status(200).json({ success: true })
     } catch(error) {
         console.error('Erro ao editar cliente:', error);

@@ -7,9 +7,6 @@ class ClienteValidator {
         if(!telefone || telefone.length == 0) {
             throw new Error('Telefone é obrigatório')
         }
-        if(!pontoColeta || pontoColeta.length == 0) {
-            throw new Error('Ponto de coleta é obrigatório')
-        }
         if(!tipoCliente || tipoCliente.length == 0) {
             throw new Error('Tipo do cliente é obrigatório')
         }
