@@ -1,4 +1,5 @@
 const connection = require('../core/connection.js');
+const funcionarioValidator = require('../validator/funcionario.js')
 
 const utils = require('../core/utils.js')
 const ApiMotoristas = require('./motoristas.js');
@@ -23,7 +24,7 @@ class ApiFuncionarios {
 
     criarNovoFuncionario(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil, email){
 
-        // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        funcionarioValidator.validarCriacao(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil)
 
         const senhaTemporaria = utils.gerarSenhaTemporaria()
 

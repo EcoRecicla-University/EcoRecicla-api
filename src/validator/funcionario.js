@@ -1,6 +1,6 @@
 class FuncionarioValidator {
 
-    validarCriacao(nome, dataNascimento, cpf, rg, dataContrat, estadoCivil, telefone) {
+    validarCriacao(nome, dataNascimento, cpf, rg, estadoCivil, telefone) {
         if(!nome || nome.length == 0) {
             throw new Error('Nome é obrigatório')
         }
