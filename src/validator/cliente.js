@@ -1,6 +1,6 @@
 class ClienteValidator {
 
-    validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente) {
+    validarCriacao(nome, cpf, cnpj, telefone, tipoCliente) {
         if(!nome || nome.length == 0) {
             throw new Error('Nome é obrigatório')
         }
