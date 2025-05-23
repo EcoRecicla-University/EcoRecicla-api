@@ -11,6 +11,7 @@ const apiVeiculo = require('./api/veiculo.js');
 const apiFuncionarios = require('./api/funcionarios.js');
 const ApiMotoristas = require('./api/motoristas.js');
 const ApiMovimen = require('./api/movimen.js')
+const ApiEndereco = require('./api/endereco.js')
 
 app.use(cors());
 app.use(express.json())
@@ -101,6 +102,11 @@ app.get('/api/clientes/:id', async (req, res) => {
         const idCliente = req.params.id;
     
         const dadosCliente = await apiCliente.getClienteById(idCliente)
+
+        const endereco = await ApiEndereco.buscarEnderecoDoCliente(idCliente)
+
+        dadosCliente.Endereco = endereco
+        
         res.json(dadosCliente);
 
     } catch(error) {
@@ -117,11 +123,15 @@ app.post('/api/clientes', async (req, res) => {
     const cnpj = req.body.CNPJ;
     const telefone = req.body.Telefone;
     const tipoCliente = req.body.Tipo_Cliente;
+    const endereco = req.body.Endereco;
 
     try {
 
-        apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente)
-        res.status(200).json({ success: true })
+        const clienteId = await apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente)
+
+        ApiEndereco.criarEndereco(clienteId, endereco)
+
+        res.status(200).json({ success: true, clienteId })
 
     } catch(error) {
         console.error('Erro ao inserir novo cliente:', error);
@@ -157,6 +167,7 @@ app.delete('/api/clientes/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
+        ApiEndereco.excluirEnderecoDoCliente(id)
         apiCliente.excluirCliente(id)
         res.status(200).json({ success: true })
     } catch(error){
