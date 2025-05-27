@@ -5,18 +5,20 @@ class ApiEndereco {
     criarEndereco(idCliente, endereco){
 
         const sql = 'INSERT INTO Endereco_Cliente'
-        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente)'
-        + ' VALUES (?, ?, ?, ?, ?, ?)';
+        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?)';
 
         
         const values = [
             endereco.CEP,
             endereco.Logradouro,
-            endereco.Cidade,
+            endereco.Localidade,
             endereco.Estado,
             endereco.Numero,
-            idCliente
+            idCliente,
+            endereco.Bairro,
         ];
+
 
         connection.execute(sql, values);
     }
@@ -42,6 +44,24 @@ class ApiEndereco {
         const sql = 'DELETE from Endereco_Cliente '
         + 'WHERE ID_Cliente = ?'
         const values = [clienteId]
+
+        connection.execute(sql, values)
+    }
+
+    editarEnderecoDoCliente(idCliente, endereco) {
+
+        const sql = 'UPDATE Endereco_Cliente SET CEP = ?, Logradouro = ?, Cidade = ?, Estado = ?, Numero = ?, Bairro = ?'
+        + ' WHERE ID_Cliente = ?'
+
+        const values = [
+            endereco.CEP,
+            endereco.Logradouro,
+            endereco.Localidade,
+            endereco.Estado,
+            endereco.Numero,
+            endereco.Bairro,
+            idCliente
+        ]
 
         connection.execute(sql, values)
     }

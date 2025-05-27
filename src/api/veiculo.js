@@ -20,9 +20,6 @@ class ApiVeiculo {
             renavam,
             capacidade
         ];
-
-        console.log(values)
-        // idMotorista
         connection.execute(sql, values);
     }
 

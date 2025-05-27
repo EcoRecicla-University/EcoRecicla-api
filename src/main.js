@@ -36,8 +36,6 @@ app.post('/api/login', async (req, res) => {
             const username = usuarioEncontrado.username;
             const idLogin = usuarioEncontrado.ID_Login;
 
-            console.log(usuarioEncontrado)
-
             const tokenCriado = utils.gerarToken(email)
             const dataExpiracaoToken = utils.definirDataExpiracaoToken()
 
@@ -130,7 +128,6 @@ app.post('/api/clientes', async (req, res) => {
         const clienteId = await apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente)
 
         ApiEndereco.criarEndereco(clienteId, endereco)
-
         res.status(200).json({ success: true, clienteId })
 
     } catch(error) {
@@ -149,10 +146,15 @@ app.put('/api/clientes/:id', async (req, res) => {
     const cnpj = req.body.CNPJ
     const telefone = req.body.Telefone
     const tipoCliente = req.body.Tipo_Cliente
+    const endereco = req.body.Endereco;
 
     try {
+        
         apiCliente.editarCliente(id, nome, cpf, cnpj, telefone, tipoCliente)
+
+        ApiEndereco.editarEnderecoDoCliente(id, endereco)
         res.status(200).json({ success: true })
+
     } catch(error) {
         console.error('Erro ao editar cliente:', error);
 
