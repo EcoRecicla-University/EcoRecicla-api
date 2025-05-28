@@ -10,8 +10,9 @@ const apiSessao = require('./api/sessao.js');
 const apiVeiculo = require('./api/veiculo.js');
 const apiFuncionarios = require('./api/funcionarios.js');
 const ApiMotoristas = require('./api/motoristas.js');
-const ApiMovimen = require('./api/movimen.js')
-const ApiEndereco = require('./api/endereco.js')
+const ApiMovimen = require('./api/movimen.js');
+const ApiEndereco = require('./api/endereco.js');
+const ApiColeta = require('./api/coleta.js')
 
 app.use(cors());
 app.use(express.json())
@@ -415,13 +416,33 @@ app.post('/api/movimen', async (req, res) => {
     
 });
 
-    app.get('/api/movimen', async (req, res) => {
-        const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
-        try {
-            res.json(idsColeta)
-        } catch(error) {
-            console.error('Erro ao buscar chave de coleta', error);
-            
-            return res.status(500).json({ error: message });
-        }
-    })
+app.get('/api/movimen', async (req, res) => {
+    const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
+    try {
+        res.json(idsColeta)
+    } catch(error) {
+        console.error('Erro ao buscar chave de coleta', error);
+        
+        return res.status(500).json({ error: message });
+    }
+})
+
+app.post('/api/coleta', async (req, res) => {
+
+    const idCliente = req.body.Cliente_ID;
+    const dataColeta = req.body.Data_Coleta;
+    const quantidade = req.body.Quantidade;
+    const statusColeta = req.body.Status_Coleta;
+
+    try {
+
+        ApiColeta.criarNovaColeta(idCliente, dataColeta, quantidade, statusColeta)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo cliente:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo cliente'
+        return res.status(500).json({ error: message });
+    }
+});

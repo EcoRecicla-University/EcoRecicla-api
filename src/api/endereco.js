@@ -4,9 +4,9 @@ class ApiEndereco {
 
     criarEndereco(idCliente, endereco){
 
-        const sql = 'INSERT INTO Endereco_Cliente'
-        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const sql = 'INSERT INTO Endereco'
+        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
         
         const values = [
@@ -17,6 +17,8 @@ class ApiEndereco {
             endereco.Numero,
             idCliente,
             endereco.Bairro,
+            'C',
+            null
         ];
 
 
@@ -26,7 +28,7 @@ class ApiEndereco {
     buscarEnderecoDoCliente(clienteId){
 
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * from Endereco_Cliente WHERE ID_Cliente = ?';
+            const sql = 'SELECT * from Endereco WHERE ID_Cliente = ?';
             connection.query(sql, [clienteId], (err, rows) => {
 
                 if (err) {
@@ -41,7 +43,7 @@ class ApiEndereco {
 
     excluirEnderecoDoCliente(clienteId) {
 
-        const sql = 'DELETE from Endereco_Cliente '
+        const sql = 'DELETE from Endereco '
         + 'WHERE ID_Cliente = ?'
         const values = [clienteId]
 
@@ -50,7 +52,7 @@ class ApiEndereco {
 
     editarEnderecoDoCliente(idCliente, endereco) {
 
-        const sql = 'UPDATE Endereco_Cliente SET CEP = ?, Logradouro = ?, Cidade = ?, Estado = ?, Numero = ?, Bairro = ?'
+        const sql = 'UPDATE Endereco SET CEP = ?, Logradouro = ?, Cidade = ?, Estado = ?, Numero = ?, Bairro = ?'
         + ' WHERE ID_Cliente = ?'
 
         const values = [
