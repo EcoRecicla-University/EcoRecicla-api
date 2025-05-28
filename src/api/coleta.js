@@ -69,7 +69,6 @@ class ApiColeta {
             statusColeta,
             idColeta
         ]
-        console.log(values)
         connection.execute(sql, values);
 
     }
