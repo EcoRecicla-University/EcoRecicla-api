@@ -129,7 +129,7 @@ app.post('/api/clientes', async (req, res) => {
 
         const clienteId = await apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente)
 
-        ApiEndereco.criarEndereco(clienteId, endereco)
+        ApiEndereco.criarEnderecoCliente(clienteId, endereco)
         res.status(200).json({ success: true, clienteId })
 
     } catch(error) {
@@ -503,10 +503,10 @@ app.post('/api/triagem', async (req, res) => {
 
     try {
 
-        const clienteId = await apiCliente.criarNovoCliente(nomeCentro, capacidade)
+        const idTriagem = await ApiTriagem.criarNovoCentroTriagem(nomeCentro, capacidade)
 
-        ApiEndereco.criarEndereco(clienteId, endereco)
-        res.status(200).json({ success: true, clienteId })
+        ApiEndereco.criarEnderecoCentroTriagem(idTriagem, endereco)
+        res.status(200).json({ success: true, idTriagem })
 
     } catch(error) {
         console.error('Erro ao inserir novo cliente:', error);

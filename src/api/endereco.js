@@ -2,7 +2,27 @@ const connection = require('../core/connection.js');
 
 class ApiEndereco {
 
-    criarEndereco(idCliente, endereco){
+    criarEnderecoCentroTriagem(IdTriagem, endereco) {
+        const sql = 'INSERT INTO Endereco'
+        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+        const values = [
+            endereco.CEP,
+            endereco.Logradouro,
+            endereco.Localidade,
+            endereco.Estado,
+            endereco.Numero,
+            null,
+            endereco.Bairro,
+            'T',
+            IdTriagem
+        ];
+
+        connection.execute(sql, values);
+    }
+
+    criarEnderecoCliente(idCliente, endereco){
 
         const sql = 'INSERT INTO Endereco'
         + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro)'
