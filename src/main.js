@@ -12,7 +12,8 @@ const apiFuncionarios = require('./api/funcionarios.js');
 const ApiMotoristas = require('./api/motoristas.js');
 const ApiMovimen = require('./api/movimen.js');
 const ApiEndereco = require('./api/endereco.js');
-const ApiColeta = require('./api/coleta.js')
+const ApiColeta = require('./api/coleta.js');
+const ApiTriagem = require('./api/triagem.js')
 
 app.use(cors());
 app.use(express.json())
@@ -490,6 +491,27 @@ app.put('/api/coleta/:id', (req, res) => {
         console.error('Erro ao editar coleta:', error);
 
         const message = error.message ?? 'Erro ao editar coleta'
+        return res.status(500).json({ error: message });
+    }
+});
+
+app.post('/api/triagem', async (req, res) => {
+
+    const nomeCentro = req.body.Nome_Centro;
+    const capacidade = req.body.Capacidade_Armaze;
+    const endereco = req.body.Endereco;
+
+    try {
+
+        const clienteId = await apiCliente.criarNovoCliente(nomeCentro, capacidade)
+
+        ApiEndereco.criarEndereco(clienteId, endereco)
+        res.status(200).json({ success: true, clienteId })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo cliente:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo cliente'
         return res.status(500).json({ error: message });
     }
 });
