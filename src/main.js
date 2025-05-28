@@ -427,6 +427,8 @@ app.get('/api/movimen', async (req, res) => {
     }
 })
 
+// Coleta -----------------------------------------------------------------------------------------------------------
+
 app.post('/api/coleta', async (req, res) => {
 
     const idCliente = req.body.Cliente_ID;
@@ -443,6 +445,51 @@ app.post('/api/coleta', async (req, res) => {
         console.error('Erro ao inserir novo cliente:', error);
 
         const message = error.message ?? 'Erro ao inserir novo cliente'
+        return res.status(500).json({ error: message });
+    }
+});
+
+app.get('/api/coleta', async (req, res) => {
+    const coletas = await ApiColeta.listarTodos()
+    try {
+        res.json(coletas)
+    } catch(error) {
+        console.error('Erro ao buscar coletas', error);
+        
+        return res.status(500).json({ error: message });
+    }
+})
+
+// Buscar coleta por ID
+app.get('/api/coleta/:id', async (req, res) => {
+
+    try {
+        const idColeta = req.params.id;
+    
+        const dadosColeta = await ApiColeta.getColetaById(parseInt(idColeta))
+        res.json(dadosColeta);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Editar Coleta
+app.put('/api/coleta/:id', (req, res) => {
+    const idColeta = req.params.id;
+    const dataColeta = req.body.Data_Coleta;
+    const idCliente = req.body.ID_Cliente;
+    const quantidade = req.body.Quantidade;
+    const statusColeta = req.body.Status_Coleta;
+
+    try {
+        ApiColeta.editarColeta(idColeta, idCliente, dataColeta, quantidade, statusColeta)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar coleta:', error);
+
+        const message = error.message ?? 'Erro ao editar coleta'
         return res.status(500).json({ error: message });
     }
 });
