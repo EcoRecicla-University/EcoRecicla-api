@@ -3,6 +3,22 @@ const triagemValidator = require('../validator/triagem.js')
 
 class ApiTriagem {
 
+    listarTodos() {
+
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT e.Cidade, c.* from centros c INNER JOIN endereco e ON c.ID_Centro = e.ID_Centro;';
+            
+            connection.query(sql,(err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
+
     criarNovoCentroTriagem(nomeCentro, capacidade){
 
         triagemValidator.validarCriacao(nomeCentro, capacidade)

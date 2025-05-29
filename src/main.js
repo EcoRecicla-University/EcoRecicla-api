@@ -495,6 +495,9 @@ app.put('/api/coleta/:id', (req, res) => {
     }
 });
 
+// Centro de triagem -----------------------------------------------------------------------------------------------------
+
+// Criar novo centro de triagem
 app.post('/api/triagem', async (req, res) => {
 
     const nomeCentro = req.body.Nome_Centro;
@@ -513,5 +516,17 @@ app.post('/api/triagem', async (req, res) => {
 
         const message = error.message ?? 'Erro ao inserir novo cliente'
         return res.status(500).json({ error: message });
+    }
+});
+
+// Buscar todos os centros
+app.get('/api/triagem', async (req, res) => {
+    try {
+        const centrosTriagem = await ApiTriagem.listarTodos();
+        res.json(centrosTriagem);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
     }
 });
