@@ -171,8 +171,8 @@ app.delete('/api/clientes/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
+        await apiCliente.excluirCliente(id)
         ApiEndereco.excluirEnderecoDoCliente(id)
-        apiCliente.excluirCliente(id)
         res.status(200).json({ success: true })
     } catch(error){
         console.error('Erro ao excluir cliente:', error);

@@ -6,7 +6,7 @@ class ApiColeta {
     listarTodos() {
 
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT c.Nome AS Nome, t.* from coletas t  INNER JOIN clientes c ON t.ID_Cliente = c.ID_Cliente WHERE Cliente_Ativo = ?';
+            const sql = 'SELECT c.Nome AS Nome, t.* from coletas t  INNER JOIN clientes c ON t.ID_Cliente = c.ID_Cliente';
             
             connection.query(sql,['A'],(err, rows) => {
 
@@ -71,6 +71,23 @@ class ApiColeta {
         ]
         connection.execute(sql, values);
 
+    }
+
+    buscaPorCliente(id){
+
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * from coletas WHERE ID_Cliente = ?'
+            + ' and Status_Coleta != ?';
+
+            connection.query(sql, [id], ['CA'], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
     }
 }
 

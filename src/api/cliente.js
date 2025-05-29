@@ -1,6 +1,8 @@
 const connection = require('../core/connection.js');
 const clienteValidator = require('../validator/cliente.js')
 
+const ApiColeta = require('./coleta.js');
+
 class ApiCliente {
 
     listarTodos() {
@@ -118,7 +120,13 @@ class ApiCliente {
         connection.execute(sql, values);
     }
 
-    excluirCliente(id) {
+    async excluirCliente(id) {
+
+        const clienteColeta = await ApiColeta.buscaPorCliente(id)
+        
+        if(clienteColeta.length > 0){
+            throw new Error('Não pode excluir esse Cliente porque ele esta incluso em uma coleta.')
+        }
 
         const sql = 'UPDATE Clientes set Cliente_Ativo = ?'
         + ' WHERE ID_Cliente = ?'
