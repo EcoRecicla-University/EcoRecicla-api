@@ -76,10 +76,9 @@ class ApiColeta {
     buscaPorCliente(id){
 
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * from coletas WHERE ID_Cliente = ?'
-            + ' and Status_Coleta != ?';
+            const sql = 'SELECT * from coletas WHERE ID_Cliente = ? and Status_Coleta != ?';
 
-            connection.query(sql, [id], ['CA'], (err, rows) => {
+            connection.query(sql, [id, 'CA'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
