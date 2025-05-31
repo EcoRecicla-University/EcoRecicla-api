@@ -37,6 +37,29 @@ class ApiMotoristas {
 
     }
 
+    listarTodosDiponiveis() {
+        return new Promise((resolve, reject) => {
+
+            const sql = `select m.*, f.Nome AS Nome from motoristas m
+                LEFT JOIN veiculo_motorista v
+                ON m.ID_Motorista = v.ID_Motorista 
+                left JOIN rotas r
+                on v.ID_Veiculo_Motorista = r.ID_Veiculo_Motorista
+                Inner JOIn funcionarios f
+                on f.ID_Funci = m.ID_Funci
+                Where v.ID_Motorista is null or r.Status_Rota != ?;`
+
+            connection.query(sql, ['AB'], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
+
     buscarPorFuncionario(id){
 
         return new Promise((resolve, reject) => {

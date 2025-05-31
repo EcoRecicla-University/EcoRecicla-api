@@ -345,9 +345,16 @@ app.post('/api/motoristas', async (req, res) => {
 
 // Buscar todos os motoristas
 app.get('/api/motoristas', async (req, res) => {
+    const somenteDisponiveis = req.query.somenteDisponiveis
+
     try {
-        const motoristas = await ApiMotoristas.listarTodos();
-        res.json(motoristas);
+        if(somenteDisponiveis == 'true') {
+            const motoristas = await ApiMotoristas.listarTodosDiponiveis()
+            res.json(motoristas);
+        } else {
+            const motoristas = await ApiMotoristas.listarTodos();
+            res.json(motoristas);
+        }
 
     } catch(error) {
         console.error('Erro na consulta:', error);
