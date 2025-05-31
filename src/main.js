@@ -210,9 +210,16 @@ app.post('/api/veiculos', async (req, res) => {
 
 // Buscar todos os veiculos
 app.get('/api/veiculos', async (req, res) => {
+    const somenteDisponiveis = req.query.somenteDisponiveis
+
     try {
-        const veiculos = await apiVeiculo.listarTodos()
-        res.json(veiculos);
+        if(somenteDisponiveis == 'true') {
+            const veiculos = await apiVeiculo.listarTodosDiponiveis()
+            res.json(veiculos);
+        } else {
+            const veiculos = await apiVeiculo.listarTodos()
+            res.json(veiculos);
+        }
 
     } catch(error) {
         console.error('Erro na consulta:', error);

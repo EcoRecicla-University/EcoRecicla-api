@@ -36,6 +36,27 @@ class ApiVeiculo {
             });
         });
     }
+
+    listarTodosDiponiveis() {
+        return new Promise((resolve, reject) => {
+
+            const sql = `select v.* from veiculos v
+                LEFT JOIN veiculo_motorista m
+                ON v.ID_Veiculo = m.ID_Veiculo 
+                left JOIN rotas r
+                on m.ID_Veiculo_Motorista = r.ID_Veiculo_Motorista
+                Where m.ID_Veiculo is null or r.Status_Rota != ?`
+
+            connection.query(sql, ['AB'], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
 }
 
 module.exports = new ApiVeiculo();
