@@ -13,7 +13,9 @@ const ApiMotoristas = require('./api/motoristas.js');
 const ApiMovimen = require('./api/movimen.js');
 const ApiEndereco = require('./api/endereco.js');
 const ApiColeta = require('./api/coleta.js');
-const ApiTriagem = require('./api/triagem.js')
+const ApiTriagem = require('./api/triagem.js');
+const ApiRota = require('./api/rota.js')
+const ApiVeiculoMotorista = require('./api/veiculoMotorista.js')
 
 app.use(cors());
 app.use(express.json())
@@ -542,5 +544,38 @@ app.get('/api/triagem', async (req, res) => {
     } catch(error) {
         console.error('Erro na consulta:', error);
         return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+
+// Rotas --------------------------------------------------------------------------------------------------------------
+
+// Criar nova rota
+app.post('/api/rota', async (req, res) => {
+
+    const idColeta = req.body.ID_Coleta;
+    const idMotorista = req.body.ID_Motorista;
+    const idVeiculo = req.body.ID_Veiculo;
+    const idFuncionario = req.body.ID_Funci;
+    const idCentroInicio = req.body.ID_Centro_Inicio;
+    const idCentroFim = req.body.ID_Centro_Fim;
+
+    try {
+        const motoristaVeiculo = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(idMotorista, idVeiculo)
+                    
+        if(motoristaVeiculo.length > 0){
+            throw new Error('Esse motorista e esse veículo já estão sendo usados em outra rota.')
+        }
+        
+        const motoristaVeiculoId = await ApiVeiculoMotorista.criarVinculoVeiculoMotorista(idMotorista, idVeiculo)
+
+        ApiRota.criarNovaRota(idColeta, motoristaVeiculoId , idFuncionario, idCentroInicio, idCentroFim)
+        res.status(200).json({ success: true , motoristaVeiculoId})
+
+    } catch(error) {
+        console.error('Erro ao inserir nova rota:', error);
+
+        const message = error.message ?? 'Erro ao inserir nova rota'
+        return res.status(500).json({ error: message });
     }
 });

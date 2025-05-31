@@ -81,23 +81,6 @@ class ApiCliente {
         } catch(e){
             throw new Error('Erro ao cadastrar cliente')
         }
-
-        // const sql = 'INSERT INTO clientes '
-        // + '(Nome, Telefone, CPF, CNPJ, Numero_Pedidos, Tipo_Cliente, Data_Cadastro, Cliente_Ativo)'
-        // + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        // const values = [
-        //     nome,
-        //     telefone,
-        //     cpf ?? null,
-        //     cnpj ?? null,
-        //     0,
-        //     tipoCliente,
-        //     date,
-        //     'A'
-        // ];
-
-        // connection.execute(sql, values);
-        // console.log('Gravado')
     }
 
 
