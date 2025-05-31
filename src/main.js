@@ -430,6 +430,7 @@ app.get('/api/movimen', async (req, res) => {
 
 // Coleta -----------------------------------------------------------------------------------------------------------
 
+// criar nova coleta
 app.post('/api/coleta', async (req, res) => {
 
     const idCliente = req.body.Cliente_ID;
@@ -450,10 +451,23 @@ app.post('/api/coleta', async (req, res) => {
     }
 });
 
+// Listar coletas
 app.get('/api/coleta', async (req, res) => {
     const coletas = await ApiColeta.listarTodos()
     try {
         res.json(coletas)
+    } catch(error) {
+        console.error('Erro ao buscar coletas', error);
+        
+        return res.status(500).json({ error: message });
+    }
+})
+
+// Listar coletas habilitadas
+app.get('/api/coleta/habilitadas', async (req, res) => {
+    const coletasHabilitadas = await ApiColeta.listarTodosHabilitadas()
+    try {
+        res.json(coletasHabilitadas)
     } catch(error) {
         console.error('Erro ao buscar coletas', error);
         

@@ -8,7 +8,23 @@ class ApiColeta {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT c.Nome AS Nome, t.* from coletas t  INNER JOIN clientes c ON t.ID_Cliente = c.ID_Cliente';
             
-            connection.query(sql,['A'],(err, rows) => {
+            connection.query(sql,(err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
+
+    listarTodosHabilitadas() {
+
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT c.Nome AS Nome, t.* from coletas t  INNER JOIN clientes c ON t.ID_Cliente = c.ID_Cliente Where Status_Coleta != ?';
+            
+            connection.query(sql,['CA'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
