@@ -1,10 +1,12 @@
 const connection = require('../core/connection.js');
 
+const motoristaValidator = require('../validator/motorista.js')
+
 class ApiMotoristas {
 
     criarNovoMotorista(idFuncionario, categoria, numeroRogistro, validadeCarteira){
 
-        // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+        motoristaValidator.validarCriacao(idFuncionario, categoria, numeroRogistro, validadeCarteira)
 
         const sql = 'INSERT INTO motoristas '
         + '(ID_Funci, Numero_Registro, Categoria, Validade)'
@@ -33,6 +35,29 @@ class ApiMotoristas {
             });
         });
 
+    }
+
+    listarTodosDiponiveis() {
+        return new Promise((resolve, reject) => {
+
+            const sql = `select m.*, f.Nome AS Nome from motoristas m
+                LEFT JOIN veiculo_motorista v
+                ON m.ID_Motorista = v.ID_Motorista 
+                left JOIN rotas r
+                on v.ID_Veiculo_Motorista = r.ID_Veiculo_Motorista
+                Inner JOIn funcionarios f
+                on f.ID_Funci = m.ID_Funci
+                Where v.ID_Motorista is null or r.Status_Rota != ?;`
+
+            connection.query(sql, ['AB'], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
     }
 
     buscarPorFuncionario(id){

@@ -1,6 +1,8 @@
 const connection = require('../core/connection.js');
 const clienteValidator = require('../validator/cliente.js')
 
+const ApiColeta = require('./coleta.js');
+
 class ApiCliente {
 
     listarTodos() {
@@ -42,25 +44,43 @@ class ApiCliente {
     criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente){
 
         clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, tipoCliente)
+        
+        try{
+            const date = new Date()
 
-        const date = new Date()
+            const sql = 'INSERT INTO clientes '
+            + '(Nome, Telefone, CPF, CNPJ, Numero_Pedidos, Tipo_Cliente, Data_Cadastro, Cliente_Ativo)'
+            + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 
-        const sql = 'INSERT INTO clientes '
-        + '(Nome, Telefone, CPF, CNPJ, Numero_Pedidos, Tipo_Cliente, Data_Cadastro, Cliente_Ativo)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        const values = [
-            nome,
-            telefone,
-            cpf ?? null,
-            cnpj ?? null,
-            0,
-            tipoCliente,
-            date,
-            'A'
-        ];
-
-        connection.execute(sql, values);
-        console.log('Gravado')
+            const values = [
+                nome,
+                telefone,
+                cpf ?? null,
+                cnpj ?? null,
+                0,
+                tipoCliente,
+                date,
+                'A'
+            ];
+            
+            return new Promise((resolve, reject) => {
+                connection.execute(sql, values, (err, result) => {
+                    if (err) {
+                        return reject('Erro ao inserir cliente: ' + err);
+                    }
+                    
+                    const clienteId = result.insertId
+                    
+                    if (clienteId) {
+                        return resolve(clienteId);
+                    }
+                    
+                    return resolve(null);
+                });
+            })
+        } catch(e){
+            throw new Error('Erro ao cadastrar cliente')
+        }
     }
 
 
@@ -83,7 +103,13 @@ class ApiCliente {
         connection.execute(sql, values);
     }
 
-    excluirCliente(id) {
+    async excluirCliente(id) {
+
+        const clienteColeta = await ApiColeta.buscaPorCliente(id)
+        
+        if(clienteColeta.length > 0){
+            throw new Error('Não pode excluir esse Cliente porque ele esta incluso em uma coleta.')
+        }
 
         const sql = 'UPDATE Clientes set Cliente_Ativo = ?'
         + ' WHERE ID_Cliente = ?'

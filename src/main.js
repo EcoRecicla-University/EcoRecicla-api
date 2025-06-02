@@ -10,7 +10,12 @@ const apiSessao = require('./api/sessao.js');
 const apiVeiculo = require('./api/veiculo.js');
 const apiFuncionarios = require('./api/funcionarios.js');
 const ApiMotoristas = require('./api/motoristas.js');
-const ApiMovimen = require('./api/movimen.js')
+const ApiMovimen = require('./api/movimen.js');
+const ApiEndereco = require('./api/endereco.js');
+const ApiColeta = require('./api/coleta.js');
+const ApiTriagem = require('./api/triagem.js');
+const ApiRota = require('./api/rota.js')
+const ApiVeiculoMotorista = require('./api/veiculoMotorista.js')
 
 app.use(cors());
 app.use(express.json())
@@ -34,8 +39,6 @@ app.post('/api/login', async (req, res) => {
         if (usuarioEncontrado) {
             const username = usuarioEncontrado.username;
             const idLogin = usuarioEncontrado.ID_Login;
-
-            console.log(usuarioEncontrado)
 
             const tokenCriado = utils.gerarToken(email)
             const dataExpiracaoToken = utils.definirDataExpiracaoToken()
@@ -101,6 +104,11 @@ app.get('/api/clientes/:id', async (req, res) => {
         const idCliente = req.params.id;
         
         const dadosCliente = await apiCliente.getClienteById(idCliente)
+
+        const endereco = await ApiEndereco.buscarEnderecoDoCliente(idCliente)
+
+        dadosCliente.Endereco = endereco
+        
         res.json(dadosCliente);
 
     } catch(error) {
@@ -117,11 +125,14 @@ app.post('/api/clientes', async (req, res) => {
     const cnpj = req.body.CNPJ;
     const telefone = req.body.Telefone;
     const tipoCliente = req.body.Tipo_Cliente;
+    const endereco = req.body.Endereco;
 
     try {
-        console.log('teste aqui')
-        apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
-        res.status(200).json({ success: true })
+
+        const clienteId = await apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente)
+
+        ApiEndereco.criarEnderecoCliente(clienteId, endereco)
+        res.status(200).json({ success: true, clienteId })
 
     } catch(error) {
         console.error('Erro ao inserir novo cliente:', error);
@@ -139,10 +150,15 @@ app.put('/api/clientes/:id', async (req, res) => {
     const cnpj = req.body.CNPJ
     const telefone = req.body.Telefone
     const tipoCliente = req.body.Tipo_Cliente
+    const endereco = req.body.Endereco;
 
     try {
+        
         apiCliente.editarCliente(id, nome, cpf, cnpj, telefone, tipoCliente)
+
+        ApiEndereco.editarEnderecoDoCliente(id, endereco)
         res.status(200).json({ success: true })
+
     } catch(error) {
         console.error('Erro ao editar cliente:', error);
 
@@ -157,7 +173,8 @@ app.delete('/api/clientes/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
-        apiCliente.excluirCliente(id)
+        await apiCliente.excluirCliente(id)
+        ApiEndereco.excluirEnderecoDoCliente(id)
         res.status(200).json({ success: true })
     } catch(error){
         console.error('Erro ao excluir cliente:', error);
@@ -193,9 +210,16 @@ app.post('/api/veiculos', async (req, res) => {
 
 // Buscar todos os veiculos
 app.get('/api/veiculos', async (req, res) => {
+    const somenteDisponiveis = req.query.somenteDisponiveis
+
     try {
-        const veiculos = await apiVeiculo.listarTodos()
-        res.json(veiculos);
+        if(somenteDisponiveis == 'true') {
+            const veiculos = await apiVeiculo.listarTodosDiponiveis()
+            res.json(veiculos);
+        } else {
+            const veiculos = await apiVeiculo.listarTodos()
+            res.json(veiculos);
+        }
 
     } catch(error) {
         console.error('Erro na consulta:', error);
@@ -321,9 +345,16 @@ app.post('/api/motoristas', async (req, res) => {
 
 // Buscar todos os motoristas
 app.get('/api/motoristas', async (req, res) => {
+    const somenteDisponiveis = req.query.somenteDisponiveis
+
     try {
-        const motoristas = await ApiMotoristas.listarTodos();
-        res.json(motoristas);
+        if(somenteDisponiveis == 'true') {
+            const motoristas = await ApiMotoristas.listarTodosDiponiveis()
+            res.json(motoristas);
+        } else {
+            const motoristas = await ApiMotoristas.listarTodos();
+            res.json(motoristas);
+        }
 
     } catch(error) {
         console.error('Erro na consulta:', error);
@@ -403,82 +434,163 @@ app.post('/api/movimen', async (req, res) => {
   }
 });
 
-// Listar movimentações detalhadas (com nome do tipo de resíduo)
 app.get('/api/movimen', async (req, res) => {
-  try {
-    const dados = await ApiMovimen.listarDetalhado();
-    res.json(dados);
-  } catch (error) {
-    console.error('Erro ao listar movimentações:', error);
-    return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
-  }
+    const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
+    try {
+        res.json(idsColeta)
+    } catch(error) {
+        console.error('Erro ao buscar chave de coleta', error);
+        
+        return res.status(500).json({ error: message });
+    }
+})
+
+// Coleta -----------------------------------------------------------------------------------------------------------
+
+// criar nova coleta
+app.post('/api/coleta', async (req, res) => {
+
+    const idCliente = req.body.Cliente_ID;
+    const dataColeta = req.body.Data_Coleta;
+    const quantidade = req.body.Quantidade;
+    const statusColeta = req.body.Status_Coleta;
+
+    try {
+
+        ApiColeta.criarNovaColeta(idCliente, dataColeta, quantidade, statusColeta)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo cliente:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo cliente'
+        return res.status(500).json({ error: message });
+    }
 });
 
-// Buscar movimentação por ID
-app.get('/api/movimen/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const movimen = await ApiMovimen.getMovimenById(id);
-    if (!movimen) return res.status(404).json({ error: 'Movimentação não encontrada' });
-    res.json(movimen);
-  } catch (error) {
-    console.error('Erro ao buscar movimentação:', error);
-    return res.status(500).json({ error: 'Erro ao buscar movimentação' });
-  }
+// Listar coletas
+app.get('/api/coleta', async (req, res) => {
+    const coletas = await ApiColeta.listarTodos()
+    try {
+        res.json(coletas)
+    } catch(error) {
+        console.error('Erro ao buscar coletas', error);
+        
+        return res.status(500).json({ error: message });
+    }
+})
+
+// Listar coletas habilitadas
+app.get('/api/coleta/habilitadas', async (req, res) => {
+    const coletasHabilitadas = await ApiColeta.listarTodosHabilitadas()
+    try {
+        res.json(coletasHabilitadas)
+    } catch(error) {
+        console.error('Erro ao buscar coletas', error);
+        
+        return res.status(500).json({ error: message });
+    }
+})
+
+// Buscar coleta por ID
+app.get('/api/coleta/:id', async (req, res) => {
+
+    try {
+        const idColeta = req.params.id;
+    
+        const dadosColeta = await ApiColeta.getColetaById(parseInt(idColeta))
+        res.json(dadosColeta);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
 });
 
-// Buscar chave coletas por ID
-app.get('/api/movimen', async (req, res) => {
-  try {
-    const chaves = await ApiMovimen.getChavesColeta();
-    res.json(chaves);
-  } catch (error) {
-    console.error('Erro ao buscar chaves de coleta:', error);
-    res.status(500).json({ error: 'Erro ao buscar chaves de coleta' });
-  }
+// Editar Coleta
+app.put('/api/coleta/:id', (req, res) => {
+    const idColeta = req.params.id;
+    const dataColeta = req.body.Data_Coleta;
+    const idCliente = req.body.ID_Cliente;
+    const quantidade = req.body.Quantidade;
+    const statusColeta = req.body.Status_Coleta;
+
+    try {
+        ApiColeta.editarColeta(idColeta, idCliente, dataColeta, quantidade, statusColeta)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar coleta:', error);
+
+        const message = error.message ?? 'Erro ao editar coleta'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Centro de triagem -----------------------------------------------------------------------------------------------------
+
+// Criar novo centro de triagem
+app.post('/api/triagem', async (req, res) => {
+
+    const nomeCentro = req.body.Nome_Centro;
+    const capacidade = req.body.Capacidade_Armaze;
+    const endereco = req.body.Endereco;
+
+    try {
+
+        const idTriagem = await ApiTriagem.criarNovoCentroTriagem(nomeCentro, capacidade)
+
+        ApiEndereco.criarEnderecoCentroTriagem(idTriagem, endereco)
+        res.status(200).json({ success: true, idTriagem })
+
+    } catch(error) {
+        console.error('Erro ao inserir novo cliente:', error);
+
+        const message = error.message ?? 'Erro ao inserir novo cliente'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Buscar todos os centros
+app.get('/api/triagem', async (req, res) => {
+    try {
+        const centrosTriagem = await ApiTriagem.listarTodos();
+        res.json(centrosTriagem);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
 });
 
 
-// Editar movimentação
-app.put('/api/movimen/:id', async (req, res) => {
-  const id = req.params.id;
+// Rotas --------------------------------------------------------------------------------------------------------------
 
-    const {
-        ID_Coleta_Tipo_Residuo,
-        Quantidade,
-        Data_Entrada,
-        AvisarEstoqueMax,
-        AvisarEstoqueMin
-    } = req.body;
+// Criar nova rota
+app.post('/api/rota', async (req, res) => {
 
-  try {
-    const atualizada = await ApiMovimen.editarMovimen(
-      id,
-      ID_Coleta_Tipo_Residuo,
-      Quantidade,
-      Data_Entrada,
-      AvisarEstoqueMax,
-      AvisarEstoqueMin
-    );
+    const idColeta = req.body.ID_Coleta;
+    const idMotorista = req.body.ID_Motorista;
+    const idVeiculo = req.body.ID_Veiculo;
+    const idFuncionario = req.body.ID_Funci;
+    const idCentroInicio = req.body.ID_Centro_Inicio;
+    const idCentroFim = req.body.ID_Centro_Fim;
 
-    res.json(atualizada);
-  } catch (error) {
-    console.error('Erro ao editar movimentação:', error);
-    const message = error.message ?? 'Erro ao editar movimentação';
-    return res.status(500).json({ error: message });
-  }
-});
+    try {
+        const motoristaVeiculo = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(idMotorista, idVeiculo)
+                    
+        if(motoristaVeiculo.length > 0){
+            throw new Error('Esse motorista e esse veículo já estão sendo usados em outra rota.')
+        }
+        
+        const motoristaVeiculoId = await ApiVeiculoMotorista.criarVinculoVeiculoMotorista(idMotorista, idVeiculo)
 
-// Excluir movimentação
-app.delete('/api/movimen/:id', async (req, res) => {
-  const id = req.params.id;
+        ApiRota.criarNovaRota(idColeta, motoristaVeiculoId , idFuncionario, idCentroInicio, idCentroFim)
+        res.status(200).json({ success: true , motoristaVeiculoId})
 
-  try {
-    const resultado = await ApiMovimen.excluirMovimen(id);
-    res.json(resultado);
-  } catch (error) {
-    console.error('Erro ao excluir movimentação:', error);
-    const message = error.message ?? 'Erro ao excluir movimentação';
-    return res.status(500).json({ error: message });
-  }
+    } catch(error) {
+        console.error('Erro ao inserir nova rota:', error);
+
+        const message = error.message ?? 'Erro ao inserir nova rota'
+        return res.status(500).json({ error: message });
+    }
 });
