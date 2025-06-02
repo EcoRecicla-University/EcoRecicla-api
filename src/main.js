@@ -13,7 +13,7 @@ const ApiMovimen = require('./api/movimen.js')
 app.use(cors());
 app.use(express.json())
 
-const port = 8080;
+const port = 4200;
 
 // Porta do servidor
 app.listen(port, () => {
@@ -94,7 +94,7 @@ app.get('/api/clientes/:id', async (req, res) => {
 
     try {
         const idCliente = req.params.id;
-    
+        
         const dadosCliente = await apiCliente.getClienteById(idCliente)
         res.json(dadosCliente);
 
@@ -115,7 +115,7 @@ app.post('/api/clientes', async (req, res) => {
     const tipoCliente = req.body.Tipo_Cliente;
 
     try {
-
+        console.log('teste aqui')
         apiCliente.criarNovoCliente(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
         res.status(200).json({ success: true })
 
@@ -410,35 +410,105 @@ app.delete('/api/categoria/:id', async (req, res) => {
     }
 });
 
-// MOVIMENTO DE ESTOQUE
+// MOVIMENTAÇÕES ---------------------------------------------------------------------------------------------------------------------
 
-// Criar novo movimento de estoque
+// Criar nova movimentação
 app.post('/api/movimen', async (req, res) => {
+        const {ID_Coleta_Tipo_Residuo, Quantidade, Data_Entrada, AvisarEstoqueMax, AvisarEstoqueMin} = req.body;
 
-    const quantidade = req.body.quantidade;
-    const dataEntrada = req.body.dataEntrada;
-    try {
+        try {
+        const nova = await ApiMovimen.criarNovaMovimen(
+            ID_Coleta_Tipo_Residuo,
+            Quantidade,
+            Data_Entrada,
+            AvisarEstoqueMax,
+            AvisarEstoqueMin
+        );
 
-        ApiMovimen.criarNovaMovimen(quantidade, dataEntrada)
-        
-        res.status(200).json({ success: true })
-
-    } catch(error) {
-        console.error('Erro ao inserir nova movimentação:', error);
-
-        const message = error.message ?? 'Erro ao inserir novo centro'
-        return res.status(500).json({ error: message });
-    }
-    
+    res.status(201).json(nova);
+  } catch (error) {
+    console.error('Erro ao inserir nova movimentação:', error);
+    const message = error.message ?? 'Erro ao inserir nova movimentação';
+    return res.status(500).json({ error: message });
+  }
 });
 
-    app.get('/api/movimen', async (req, res) => {
-        const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
-        try {
-            res.json(idsColeta)
-        } catch(error) {
-            console.error('Erro ao buscar chave de coleta', error);
-            
-            return res.status(500).json({ error: message });
-        }
-    })
+// Listar movimentações detalhadas (com nome do tipo de resíduo)
+app.get('/api/movimen', async (req, res) => {
+  try {
+    const dados = await ApiMovimen.listarDetalhado();
+    res.json(dados);
+  } catch (error) {
+    console.error('Erro ao listar movimentações:', error);
+    return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+  }
+});
+
+// Buscar movimentação por ID
+app.get('/api/movimen/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const movimen = await ApiMovimen.getMovimenById(id);
+    if (!movimen) return res.status(404).json({ error: 'Movimentação não encontrada' });
+    res.json(movimen);
+  } catch (error) {
+    console.error('Erro ao buscar movimentação:', error);
+    return res.status(500).json({ error: 'Erro ao buscar movimentação' });
+  }
+});
+
+// Buscar chave coletas por ID
+app.get('/api/movimen', async (req, res) => {
+  try {
+    const chaves = await ApiMovimen.getChavesColeta();
+    res.json(chaves);
+  } catch (error) {
+    console.error('Erro ao buscar chaves de coleta:', error);
+    res.status(500).json({ error: 'Erro ao buscar chaves de coleta' });
+  }
+});
+
+
+// Editar movimentação
+app.put('/api/movimen/:id', async (req, res) => {
+  const id = req.params.id;
+
+    const {
+        ID_Coleta_Tipo_Residuo,
+        Quantidade,
+        Data_Entrada,
+        AvisarEstoqueMax,
+        AvisarEstoqueMin
+    } = req.body;
+
+  try {
+    const atualizada = await ApiMovimen.editarMovimen(
+      id,
+      ID_Coleta_Tipo_Residuo,
+      Quantidade,
+      Data_Entrada,
+      AvisarEstoqueMax,
+      AvisarEstoqueMin
+    );
+
+    res.json(atualizada);
+  } catch (error) {
+    console.error('Erro ao editar movimentação:', error);
+    const message = error.message ?? 'Erro ao editar movimentação';
+    return res.status(500).json({ error: message });
+  }
+});
+
+// Excluir movimentação
+app.delete('/api/movimen/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const resultado = await ApiMovimen.excluirMovimen(id);
+    res.json(resultado);
+  } catch (error) {
+    console.error('Erro ao excluir movimentação:', error);
+    const message = error.message ?? 'Erro ao excluir movimentação';
+    return res.status(500).json({ error: message });
+  }
+});
