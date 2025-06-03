@@ -16,6 +16,7 @@ const ApiColeta = require('./api/coleta.js');
 const ApiTriagem = require('./api/triagem.js');
 const ApiRota = require('./api/rota.js')
 const ApiVeiculoMotorista = require('./api/veiculoMotorista.js')
+const ApiReportsClientes = require('./api/reports/relatorioCliente.js')
 
 app.use(cors());
 app.use(express.json())
@@ -564,7 +565,7 @@ app.get('/api/triagem', async (req, res) => {
 
 // Rotas --------------------------------------------------------------------------------------------------------------
 
-// Criar nova rota
+// Criar rota
 app.post('/api/rota', async (req, res) => {
 
     const idColeta = req.body.ID_Coleta;
@@ -592,4 +593,12 @@ app.post('/api/rota', async (req, res) => {
         const message = error.message ?? 'Erro ao inserir nova rota'
         return res.status(500).json({ error: message });
     }
+});
+
+
+// Relatorios --------------------------------------------------------------------------------------------------------------
+
+// Criar relatorio de clientes em excel
+app.get('/api/clientes-relatorios', (req, res) => {
+    ApiReportsClientes.gerarRelatorioClientesExcel(req, res);
 });
