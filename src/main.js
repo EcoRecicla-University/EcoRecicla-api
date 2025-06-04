@@ -595,6 +595,18 @@ app.post('/api/rota', async (req, res) => {
     }
 });
 
+// Buscar todas as rotas
+app.get('/api/rota', async (req, res) => {
+    try {
+        const rotas = await ApiRota.listarTodos();
+        res.json(rotas);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
 
 // Relatorios --------------------------------------------------------------------------------------------------------------
 
