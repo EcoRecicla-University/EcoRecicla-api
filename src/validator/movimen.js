@@ -1,6 +1,6 @@
 class MovimenValidator {
-  validarCriacao(idColetaTipoResiduo, quantidade, dataEntrada) {
-    if (!idColetaTipoResiduo || isNaN(idColetaTipoResiduo)) {
+  validarCriacao(idColeta, quantidade, dataEntrada) {
+    if (!idColeta || isNaN(idColeta)) {
       throw new Error('ID da chave de coleta é obrigatório e deve ser numérico');
     }
 
@@ -8,7 +8,7 @@ class MovimenValidator {
       throw new Error('Quantidade é obrigatória');
     }
 
-    if (isNaN(quantidade) || quantidade <= 0) {
+    if (typeof quantidade !== 'number' || isNaN(quantidade) || quantidade <= 0) {
       throw new Error('Quantidade deve ser um número maior que zero');
     }
 

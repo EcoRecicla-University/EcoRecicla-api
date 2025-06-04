@@ -13,7 +13,7 @@ class ApiColeta {
                 if (err) {
                     return reject('Erro na consulta: ' + err);
                 }
-                
+
                 return resolve(rows);
             });
         });

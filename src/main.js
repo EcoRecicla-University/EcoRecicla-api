@@ -16,11 +16,12 @@ const ApiColeta = require('./api/coleta.js');
 const ApiTriagem = require('./api/triagem.js');
 const ApiRota = require('./api/rota.js')
 const ApiVeiculoMotorista = require('./api/veiculoMotorista.js')
+const apiEstoque = require('./api/estoque');
 
 app.use(cors());
 app.use(express.json())
 
-const port = 4200;
+const port = 8080;
 
 // Porta do servidor
 app.listen(port, () => {
@@ -415,16 +416,17 @@ app.put('/api/motoristas/:id', (req, res) => {
 
 // Criar nova movimentação
 app.post('/api/movimen', async (req, res) => {
-        const {ID_Coleta_Tipo_Residuo, Quantidade, Data_Entrada, AvisarEstoqueMax, AvisarEstoqueMin} = req.body;
+  const { ID_Coleta, Quantidade, Data_Entrada, AvisarEstoqueMax, AvisarEstoqueMin, Categoria } = req.body;
 
-        try {
-        const nova = await ApiMovimen.criarNovaMovimen(
-            ID_Coleta_Tipo_Residuo,
-            Quantidade,
-            Data_Entrada,
-            AvisarEstoqueMax,
-            AvisarEstoqueMin
-        );
+  try {
+    const nova = await ApiMovimen.criarNovaMovimen(
+      ID_Coleta,
+      Quantidade,
+      Data_Entrada,
+      AvisarEstoqueMax,
+      AvisarEstoqueMin,
+      Categoria
+    );
 
     res.status(201).json(nova);
   } catch (error) {
@@ -434,16 +436,103 @@ app.post('/api/movimen', async (req, res) => {
   }
 });
 
+// Listar movimentações detalhadas (com nome do tipo de resíduo)
 app.get('/api/movimen', async (req, res) => {
-    const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
+  try {
+    const dados = await ApiMovimen.listarTodos();
+    res.json(dados);
+  } catch (error) {
+    console.error('Erro ao listar movimentações:', error);
+    return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+  }
+});
+
+    // Buscar movimentação por ID
+    app.get('/api/movimen/:id', async (req, res) => {
     try {
-        res.json(idsColeta)
-    } catch(error) {
-        console.error('Erro ao buscar chave de coleta', error);
-        
+        const id = req.params.id;
+        const movimen = await ApiMovimen.getMovimenById(id);
+        if (!movimen) return res.status(404).json({ error: 'Movimentação não encontrada' });
+        res.json(movimen);
+    } catch (error) {
+        console.error('Erro ao buscar movimentação:', error);
+        return res.status(500).json({ error: 'Erro ao buscar movimentação' });
+    }
+    });
+
+    // Buscar todas as coletas para popular o select de movimentações
+    app.get('/api/coletas', async (req, res) => {
+    try {
+        const coletas = await ApiColeta.listarTodos();
+        res.json(coletas);
+    } catch (error) {
+        console.error('Erro ao buscar coletas:', error);
+        res.status(500).json({ error: 'Erro ao buscar coletas' });
+    }
+    });
+
+    // Editar movimentação
+    app.put('/api/movimen/:id', async (req, res) => {
+    const id = req.params.id;
+
+    let {
+        ID_Coleta,
+        Quantidade,
+        Data_Entrada,
+        AvisarEstoqueMax,
+        AvisarEstoqueMin,
+        Categoria
+    } = req.body;
+
+    try {
+        if (typeof Quantidade === 'string') {
+        Quantidade = Quantidade.trim() === '' ? NaN : Number(Quantidade);
+        }
+        Quantidade = Number(Quantidade);
+
+        const dadosAtualizados = {
+            ID_Coleta,
+            Quantidade,
+            Data_Entrada,
+            AvisarEstoqueMax,
+            AvisarEstoqueMin,
+            Categoria
+        };
+
+        const atualizada = await ApiMovimen.editarMovimen(id, dadosAtualizados);
+
+
+        res.json(atualizada);
+    } catch (error) {
+        console.error('Erro ao editar movimentação:', error);
+        const message = error.message ?? 'Erro ao editar movimentação';
         return res.status(500).json({ error: message });
     }
-})
+    });
+
+    // Inativar movimentação
+    app.put('/api/movimen/inativar/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const resultado = await ApiMovimen.inativarMovimen(id);
+        res.json(resultado);
+    } catch (error) {
+        console.error('Erro ao inativar movimentação:', error);
+        res.status(500).json({ error: 'Erro ao inativar movimentação' });
+    }
+    });
+
+// ESTOQUE ----------------------------------------------------------------------------------------------------------
+
+app.get('/api/estoque', async (req, res) => {
+  try {
+    const dados = await apiEstoque.listarTodos();
+    res.json(dados);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao listar estoque' });
+  }
+});
 
 // Coleta -----------------------------------------------------------------------------------------------------------
 
