@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const app = express();
+const connection = require('./core/connection.js');
 
 const utils = require('./core/utils.js')
 
@@ -632,26 +633,99 @@ app.post('/api/triagem', async (req, res) => {
         res.status(200).json({ success: true, idTriagem })
 
     } catch(error) {
-        console.error('Erro ao inserir novo cliente:', error);
+        console.error('Erro ao inserir novo centro de triagem:', error);
 
-        const message = error.message ?? 'Erro ao inserir novo cliente'
+        const message = error.message ?? 'Erro ao inserir novo centro de triagem'
         return res.status(500).json({ error: message });
     }
 });
 
 // Buscar todos os centros
 app.get('/api/triagem', async (req, res) => {
-    try {
-        const centrosTriagem = await ApiTriagem.listarTodos();
-        res.json(centrosTriagem);
+  try {
+    const centrosTriagem = await ApiTriagem.listarTodos();
+    res.json(centrosTriagem);
+  } catch (error) {
+    console.error('Erro na consulta:', error);
+    return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+  }
+});
 
-    } catch(error) {
-        console.error('Erro na consulta:', error);
-        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+// Rota de detalhe
+app.get('/api/triagem/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  try {
+    const sql = `
+      SELECT c.ID_Centro, c.Nome_Centro, c.Capaci_Armaze, 
+       e.CEP, e.Logradouro, e.Cidade, e.Estado, e.Bairro, e.Numero
+      FROM centros c
+      LEFT JOIN endereco e ON c.ID_Centro = e.ID_Centro
+      WHERE c.ID_Centro = ?;
+    `;
+
+    connection.execute(sql, [id], (err, rows) => {
+      if (err) {
+        console.error('[ERRO SQL] Falha ao buscar centro por ID:', err);
+        return res.status(500).json({ error: 'Erro na consulta ao banco' });
+      }
+
+      if (!rows || rows.length === 0) {
+        console.warn(`[AVISO] Centro com ID ${id} não encontrado`);
+        return res.status(404).json({ error: 'Centro não encontrado' });
+      }
+
+      const row = rows[0];
+      console.log('[DEBUG] Centro retornado:', row);
+
+      return res.json({
+        ID_Centro: row.ID_Centro,
+        Nome_Centro: row.Nome_Centro,
+        Capacidade_Armaze: row.Capaci_Armaze,
+        Endereco: {
+          CEP: row.CEP,
+          Logradouro: row.Logradouro,
+          Localidade: row.Cidade,
+          Estado: row.Estado,
+          Bairro: row.Bairro,
+          Numero: row.Numero
+        }
+      });
+    });
+
+  } catch (error) {
+    console.error('[ERRO GERAL] Falha na rota GET /triagem/:id', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/triagem/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const { Nome_Centro, Capacidade_Armaze, Endereco } = req.body;
+
+    try {
+        await ApiTriagem.editarCentroTriagem(id, Nome_Centro, Capacidade_Armaze);
+        await ApiEndereco.editarEnderecoCentroTriagem(id, Endereco);
+        return res.json({ success: true });
+    } catch (error) {
+        console.error('Erro ao editar centro:', error);
+        return res.status(500).json({ error: error.message });
     }
 });
 
 
+    // Inativar centro de triagem
+app.patch('/api/triagem/:id/inativar', async (req, res) => {
+    const idCentro = parseInt(req.params.id);
+
+    try {
+        const resultado = await ApiTriagem.inativarCentro(idCentro);
+        res.status(200).json(resultado);
+    } catch (error) {
+        console.error('Erro ao inativar centro:', error);
+        return res.status(500).json({ error: error.message ?? 'Erro ao inativar centro' });
+    }
+});
 // Rotas --------------------------------------------------------------------------------------------------------------
 
 // Criar nova rota
@@ -683,3 +757,4 @@ app.post('/api/rota', async (req, res) => {
         return res.status(500).json({ error: message });
     }
 });
+

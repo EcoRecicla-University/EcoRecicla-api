@@ -2,90 +2,59 @@ const connection = require('../core/connection.js');
 
 class ApiEndereco {
 
-    criarEnderecoCentroTriagem(IdTriagem, endereco) {
-        const sql = 'INSERT INTO Endereco'
-        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-
-        const values = [
-            endereco.CEP,
-            endereco.Logradouro,
-            endereco.Localidade,
-            endereco.Estado,
-            endereco.Numero,
-            null,
-            endereco.Bairro,
-            'T',
-            IdTriagem
-        ];
-
-        connection.execute(sql, values);
-    }
-
-    criarEnderecoCliente(idCliente, endereco){
-
-        const sql = 'INSERT INTO Endereco'
-        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-
-        
-        const values = [
-            endereco.CEP,
-            endereco.Logradouro,
-            endereco.Localidade,
-            endereco.Estado,
-            endereco.Numero,
-            idCliente,
-            endereco.Bairro,
-            'C',
-            null
-        ];
-
-
-        connection.execute(sql, values);
-    }
-
-    buscarEnderecoDoCliente(clienteId){
-
+    criarEnderecoCentroTriagem(idCentro, endereco) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * from Endereco WHERE ID_Cliente = ?';
-            connection.query(sql, [clienteId], (err, rows) => {
+            const sql = `
+                INSERT INTO endereco (ID_Centro, CEP, Logradouro, Cidade, Estado, Bairro, Numero)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `;
 
+            const values = [
+                idCentro,
+                endereco.CEP,
+                endereco.Logradouro,
+                endereco.Localidade,
+                endereco.Estado,
+                endereco.Bairro,
+                endereco.Numero
+            ];
+
+            connection.execute(sql, values, (err) => {
                 if (err) {
-                    return reject('Erro na consulta: ' + err);
+                    return reject('Erro ao inserir endereço: ' + err);
                 }
-                
-                return resolve(rows[0]);
+
+                return resolve(true);
             });
         });
-
     }
 
-    excluirEnderecoDoCliente(clienteId) {
+    editarEnderecoCentroTriagem(idCentro, endereco) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+                UPDATE endereco
+                SET CEP = ?, Logradouro = ?, Cidade = ?, Estado = ?, Bairro = ?, Numero = ?
+                WHERE ID_Centro = ?
+            `;
 
-        const sql = 'DELETE from Endereco '
-        + 'WHERE ID_Cliente = ?'
-        const values = [clienteId]
+            const values = [
+                endereco.CEP,
+                endereco.Logradouro,
+                endereco.Localidade,
+                endereco.Estado,
+                endereco.Bairro,
+                endereco.Numero,
+                idCentro
+            ];
 
-        connection.execute(sql, values)
-    }
+            connection.execute(sql, values, (err) => {
+                if (err) {
+                    return reject('Erro ao editar endereço: ' + err);
+                }
 
-    editarEnderecoDoCliente(idCliente, endereco) {
-
-        const sql = 'UPDATE Endereco SET CEP = ?, Logradouro = ?, Cidade = ?, Estado = ?, Numero = ?, Bairro = ?'
-        + ' WHERE ID_Cliente = ?'
-
-        const values = [
-            endereco.CEP,
-            endereco.Logradouro,
-            endereco.Localidade,
-            endereco.Estado,
-            endereco.Numero,
-            endereco.Bairro,
-            idCliente
-        ]
-
-        connection.execute(sql, values)
+                return resolve(true);
+            });
+        });
     }
 }
 
