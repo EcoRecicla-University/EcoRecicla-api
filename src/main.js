@@ -622,6 +622,45 @@ app.get('/api/rota/:id', async (req, res) => {
     }
 });
 
+// Editar Rota
+app.put('/api/rota/:id', async (req, res) => {
+    const idRota = req.params.id
+    const idColeta = req.body.ID_Coleta;
+    const idMotorista = req.body.ID_Motorista;
+    const idVeiculo = req.body.ID_Veiculo;
+    const idFuncionario = req.body.ID_Funci;
+    const idCentroInicio = req.body.ID_Centro_Inicio;
+    const idCentroFim = req.body.ID_Centro_Fim;
+
+
+    try {
+        const motoristaVeiculoId = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(idMotorista,idVeiculo)
+        
+        ApiVeiculoMotorista.editarMotoristaVeiculo(motoristaVeiculoId, idMotorista, idVeiculo)
+        ApiRota.editarRota(parseInt(idRota), parseInt(idColeta), parseInt(idFuncionario), parseInt(idCentroInicio), parseInt(idCentroFim))
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar motorista e veiculo:', error);
+
+        const message = error.message ?? 'Erro ao editar motorista e veiculo'
+        return res.status(500).json({ error: message });
+    }
+});
+
+// Deletar rota
+app.delete('/api/rota/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        ApiRota.excluirRota(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir rota:', error);
+
+        const message = error.message ?? 'Erro ao excluir rota'
+        return res.status(500).json({ error: message });
+    }
+});
 
 // Relatorios --------------------------------------------------------------------------------------------------------------
 

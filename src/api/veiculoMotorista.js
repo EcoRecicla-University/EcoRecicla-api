@@ -41,7 +41,7 @@ class ApiVeiculoMotorista {
 
     verificarExistenciaMotoristaVeiculo(idMotorista, idVeiculo) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM veiculo_motorista WHERE ID_Motorista = ? and ID_Veiculo = ?';
+            const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Motorista = ? and ID_Veiculo = ?';
             connection.query(sql, [idMotorista, idVeiculo], (err, rows) => {
 
                 if (err) {
@@ -53,6 +53,20 @@ class ApiVeiculoMotorista {
         });
     }
 
+
+    editarMotoristaVeiculo(idVeiculoMotorista, idMotorista, idVeiculo) {
+        return new Promise((resolve, reject) => {
+            const sql = 'UPDATE veiculo_motorista SET ID_Motorista = ? and ID_Veiculo = ? WHERE ID_Veiculo_Motorista = ?';
+            connection.query(sql, [idMotorista, idVeiculo, idVeiculoMotorista], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
 }
 
 module.exports = new ApiVeiculoMotorista();

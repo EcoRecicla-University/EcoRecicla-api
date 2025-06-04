@@ -36,9 +36,9 @@ class ApiRota {
                 FROM rotas r  
                 INNER JOIN centros c1 ON r.ID_Centro_Inicio = c1.ID_Centro
                 INNER JOIN centros c2 ON r.ID_Centro_Fim = c2.ID_Centro
-                INNER JOIN coletas c ON r.ID_Coleta = c.ID_Coleta;`;
+                INNER JOIN coletas c ON r.ID_Coleta = c.ID_Coleta WHERE Status_Rota != ?;`;
 
-            connection.query(sql, (err, rows) => {
+            connection.query(sql, ['CA'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -68,6 +68,32 @@ class ApiRota {
                 return resolve(null);
             });
         });
+    }
+
+    editarRota(idRota, idFuncionario, idCentroInicio, idCentroFim) {
+
+        // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
+
+        const sql = 'UPDATE rotas set '
+        + 'ID_Centro_Inicio = ?, ID_Centro_Fim = ?, ID_Funci = ?, ID_Coleta = ? '
+        + 'WHERE ID_Rota = ?'
+
+        const values = [
+            idCentroInicio,
+            idCentroFim,
+            idFuncionario,
+            idFuncionario,
+            idRota
+        ]
+        connection.execute(sql, values);
+    }
+
+    excluirRota(id) {
+
+        const sql = 'UPDATE rotas set Status_Rota = ? WHERE ID_Rota = ?'
+        const values = ['CA' ,id]
+
+        connection.execute(sql, values)
     }
 }
 
