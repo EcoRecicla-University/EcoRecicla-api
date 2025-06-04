@@ -49,6 +49,26 @@ class ApiRota {
         });
 
     }
+
+    getRotaById(idRota) {
+    
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT * FROM rotas r INNER JOIN veiculo_motorista vm ON r.ID_Veiculo_Motorista = vm.ID_Veiculo_Motorista WHERE ID_Rota = ?', [idRota], (err, row) => {
+            
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                const rota = row[0];
+                
+                if (rota) {
+                    return resolve(rota);
+                }
+                
+                return resolve(null);
+            });
+        });
+    }
 }
 
 module.exports = new ApiRota();

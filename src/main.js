@@ -607,6 +607,21 @@ app.get('/api/rota', async (req, res) => {
     }
 });
 
+// Buscar rota por ID
+app.get('/api/rota/:id', async (req, res) => {
+
+    try {
+        const idRota = req.params.id;
+    
+        const dadosRota = await ApiRota.getRotaById(parseInt(idRota))
+        res.json(dadosRota);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
 
 // Relatorios --------------------------------------------------------------------------------------------------------------
 
