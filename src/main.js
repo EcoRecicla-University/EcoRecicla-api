@@ -14,9 +14,11 @@ const ApiMovimen = require('./api/movimen.js');
 const ApiEndereco = require('./api/endereco.js');
 const ApiColeta = require('./api/coleta.js');
 const ApiTriagem = require('./api/triagem.js');
-const ApiRota = require('./api/rota.js')
-const ApiVeiculoMotorista = require('./api/veiculoMotorista.js')
-const ApiReportsClientes = require('./api/reports/relatorioCliente.js')
+const ApiRota = require('./api/rota.js');
+const ApiVeiculoMotorista = require('./api/veiculoMotorista.js');
+const ApiReportsClientes = require('./api/reports/relatorioCliente.js');
+const ApiReportsColetas = require('./api/reports/relatorioColeta.js');
+
 
 app.use(cors());
 app.use(express.json())
@@ -665,6 +667,40 @@ app.delete('/api/rota/:id', async (req, res) => {
 // Relatorios --------------------------------------------------------------------------------------------------------------
 
 // Criar relatorio de clientes em excel
-app.get('/api/clientes-relatorios', (req, res) => {
+app.get('/api/relatorio/clientes', (req, res) => {
     ApiReportsClientes.gerarRelatorioClientesExcel(req, res);
+});
+
+app.post('/api/relatorio/coleta', async (req, res) => {
+  const { dataInicio, dataFim } = req.body;
+
+  try {
+    const workbook = await ApiReportsColetas.gerarRelatorioColetasPorData(dataInicio, dataFim);
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=relatorio_coletas.xlsx');
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    console.error('Erro ao gerar relatório de coletas:', error);
+    res.status(500).json({ error: 'Erro ao gerar relatório de coletas' });
+  }
+});
+
+// Dashboard --------------------------------------------------------------------------------------------------------------
+
+app.post('/api/dashboard/coleta', async (req, res) => {
+  const { dataInicio, dataFim } = req.body;
+
+  try {
+
+    const coletas = await ApiReportsColetas.obterColetasPorIntervalo(dataInicio, dataFim);
+    res.json(coletas);
+
+  } catch (error) {
+    console.error('Erro ao gerar dashboard de coletas:', error);
+    res.status(500).json({ error: 'Erro ao gerar dashboard de coletas' });
+  }
 });
