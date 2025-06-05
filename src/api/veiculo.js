@@ -1,62 +1,76 @@
 const connection = require('../core/connection.js');
-const veiculoValidator = require('../validator/veiculos.js');
+const VeiculoValidator = require('../validator/veiculos.js');
 
 class ApiVeiculo {
+  // Criar novo veículo
+  async criarNovoVeiculo(placa, modelo, quilometragem, renavam, capacidade) {
+    placa = VeiculoValidator.formatarPlaca(placa);
+    VeiculoValidator.validarCriacaoOuEdicao(placa, modelo, quilometragem, renavam, capacidade);
 
-    // Criar novo veiculo
-    criarNovoVeiculo(placa, modelo, quilometragem, renavam, capacidade){
+    const sql = `
+      INSERT INTO Veiculos 
+        (Placa, Modelo, Quilometragem, Renavam, Capacidade_em_Kg) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const values = [placa, modelo, quilometragem, renavam, capacidade];
+    await connection.promise().execute(sql, values);
+  }
 
-        veiculoValidator.validarCriacaoVeiculo(placa, modelo, quilometragem, renavam, capacidade)
+  // Listar todos os veículos (somente ativos)
+  async listarTodos() {
+    const [rows] = await connection.promise().query("SELECT * FROM Veiculos WHERE Ativo = 'S'");
+    return rows;
+  }
 
-        const sql = 'INSERT INTO Veiculos'
-        + '(Placa, Modelo, Quilometragem, Renavam, Capacidade_em_Kg)'
-        + ' VALUES (?, ?, ?, ?, ?)';
+  // Listar veículos disponíveis
+  async listarTodosDiponiveis() {
+    const sql = `
+      SELECT v.* FROM Veiculos v
+      LEFT JOIN veiculo_motorista m ON v.ID_Veiculo = m.ID_Veiculo 
+      LEFT JOIN rotas r ON m.ID_Veiculo_Motorista = r.ID_Veiculo_Motorista
+      WHERE (m.ID_Veiculo IS NULL OR r.Status_Rota != ?) AND v.Ativo = 'S'
+    `;
+    const [rows] = await connection.promise().query(sql, ['AB']);
+    return rows;
+  }
 
-        
-        const values = [
-            placa,
-            modelo,
-            quilometragem,
-            renavam,
-            capacidade
-        ];
-        connection.execute(sql, values);
+  // Detalhar veículo por ID
+  async detalharVeiculo(id) {
+    const sql = 'SELECT * FROM Veiculos WHERE ID_Veiculo = ?';
+    const [rows] = await connection.promise().query(sql, [id]);
+
+    if (rows.length === 0) {
+      throw new Error('Veículo não encontrado');
     }
 
-    listarTodos() {
+    return rows[0];
+  }
 
-        return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM Veiculos', (err, rows) => {
+  // Editar veículo
+  async editarVeiculo(id, { placa, modelo, quilometragem, renavam, capacidade }) {
+    placa = VeiculoValidator.formatarPlaca(placa);
+    VeiculoValidator.validarCriacaoOuEdicao(placa, modelo, quilometragem, renavam, capacidade);
 
-                if (err) {
-                    return reject('Erro na consulta: ' + err);
-                }
-                
-                return resolve(rows);
-            });
-        });
-    }
+    const sql = `
+      UPDATE Veiculos SET 
+        Placa = ?, 
+        Modelo = ?, 
+        Quilometragem = ?, 
+        Renavam = ?, 
+        Capacidade_em_Kg = ?
+      WHERE ID_Veiculo = ?
+    `;
+    const values = [placa, modelo, quilometragem, renavam, capacidade, id];
+    const [result] = await connection.promise().execute(sql, values);
+    return result;
+  }
 
-    listarTodosDiponiveis() {
-        return new Promise((resolve, reject) => {
-
-            const sql = `select v.* from veiculos v
-                LEFT JOIN veiculo_motorista m
-                ON v.ID_Veiculo = m.ID_Veiculo 
-                left JOIN rotas r
-                on m.ID_Veiculo_Motorista = r.ID_Veiculo_Motorista
-                Where m.ID_Veiculo is null or r.Status_Rota != ?`
-
-            connection.query(sql, ['AB'], (err, rows) => {
-
-                if (err) {
-                    return reject('Erro na consulta: ' + err);
-                }
-                
-                return resolve(rows);
-            });
-        });
-    }
+  // Inativar veículo
+  async inativarVeiculo(id) {
+    const sql = `UPDATE Veiculos SET Ativo = 'N' WHERE ID_Veiculo = ?`;
+    const [result] = await connection.promise().execute(sql, [id]);
+    return result;
+  }
 }
 
 module.exports = new ApiVeiculo();

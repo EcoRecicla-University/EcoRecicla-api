@@ -8,7 +8,7 @@ const utils = require('./core/utils.js')
 const apiCliente = require('./api/cliente.js');
 const apiLogin = require('./api/login.js');
 const apiSessao = require('./api/sessao.js');
-const apiVeiculo = require('./api/veiculo.js');
+const ApiVeiculo = require('./api/veiculo.js');
 const apiFuncionarios = require('./api/funcionarios.js');
 const ApiMotoristas = require('./api/motoristas.js');
 const ApiMovimen = require('./api/movimen.js');
@@ -190,45 +190,85 @@ app.delete('/api/clientes/:id', async (req, res) => {
 
 // Criar novo veiculo
 app.post('/api/veiculos', async (req, res) => {
+  const placa = req.body.Placa;
+  const modelo = req.body.Modelo;
+  const quilometragem = req.body.Quilometragem;
+  const renavam = req.body.Renavam;
+  const capacidade = req.body.Capacidade_em_Kg;
 
-    const placa = req.body.Placa;
-    const modelo = req.body.Modelo;
-    const quilometragem = req.body.Quilometragem;
-    const renavam = req.body.Renavam;
-    const capacidade = req.body.Capacidade_em_Kg;
-
-    try {
-
-        apiVeiculo.criarNovoVeiculo(placa, modelo, quilometragem, renavam, capacidade)
-        res.status(200).json({ success: true })
-
-    } catch(error) {
-        console.error('Erro ao inserir novo veiculo:', error);
-
-        const message = error.message ?? 'Erro ao inserir novo veiculo'
-        return res.status(500).json({ error: message });
-    }
+  try {
+    await ApiVeiculo.criarNovoVeiculo(placa, modelo, quilometragem, renavam, capacidade);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Erro ao inserir novo veiculo:', error);
+    const message = error.message ?? 'Erro ao inserir novo veiculo';
+    return res.status(500).json({ error: message });
+  }
 });
 
 // Buscar todos os veiculos
 app.get('/api/veiculos', async (req, res) => {
-    const somenteDisponiveis = req.query.somenteDisponiveis
+  const somenteDisponiveis = req.query.somenteDisponiveis;
 
-    try {
-        if(somenteDisponiveis == 'true') {
-            const veiculos = await apiVeiculo.listarTodosDiponiveis()
-            res.json(veiculos);
-        } else {
-            const veiculos = await apiVeiculo.listarTodos()
-            res.json(veiculos);
-        }
+  try {
+    const veiculos = somenteDisponiveis == 'true'
+      ? await ApiVeiculo.listarTodosDiponiveis()
+      : await ApiVeiculo.listarTodos();
 
-    } catch(error) {
-        console.error('Erro na consulta:', error);
-        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
-    }
+    res.json(veiculos);
+  } catch (error) {
+    console.error('Erro na consulta:', error);
+    return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+  }
 });
 
+// Buscar veículo por ID (Detalhe)
+app.get('/api/veiculos/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const veiculo = await ApiVeiculo.detalharVeiculo(id);
+    res.json(veiculo);
+  } catch (error) {
+    console.error('Erro ao buscar detalhe do veículo:', error);
+    return res.status(404).json({ error: 'Veículo não encontrado' });
+  }
+});
+
+// Editar veículo
+app.put('/api/veiculos/:id', async (req, res) => {
+  const id = req.params.id;
+  const { Placa, Modelo, Quilometragem, Renavam, Capacidade_em_Kg } = req.body;
+
+  try {
+    await ApiVeiculo.editarVeiculo(id, {
+      placa: Placa,
+      modelo: Modelo,
+      quilometragem: Quilometragem,
+      renavam: Renavam,
+      capacidade: Capacidade_em_Kg
+    });
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Erro ao editar veículo:', error);
+    const message = error.message ?? 'Erro ao editar veículo';
+    return res.status(500).json({ error: message });
+  }
+});
+
+// Inativar veículo
+app.patch('/api/veiculos/:id/inativar', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    await ApiVeiculo.inativarVeiculo(id);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Erro ao inativar veículo:', error);
+    return res.status(500).json({ error: 'Erro ao inativar veículo' });
+  }
+});
 
 // Funcionarios -----------------------------------------------------------------------------------------------------------------------
 
