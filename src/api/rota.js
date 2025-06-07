@@ -1,6 +1,5 @@
 const connection = require('../core/connection.js');
-const RotaValidator = require('../validator/rota.js')
-const ApiVeiculoMotorista = require('./veiculoMotorista.js')
+const RotaValidator = require('../validator/rota.js');
 
 class ApiRota {
 
@@ -88,12 +87,19 @@ class ApiRota {
         connection.execute(sql, values);
     }
 
-    excluirRota(id) {
+    async excluirRota(id) {
+        
+        try{
 
-        const sql = 'UPDATE rotas set Status_Rota = ? WHERE ID_Rota = ?'
-        const values = ['CA' ,id]
+            const sql = 'UPDATE rotas set Status_Rota = ?, ID_Veiculo_Motorista = null WHERE ID_Rota = ?'
+            const values = ['CA' ,id]
+            connection.execute(sql, values)
 
-        connection.execute(sql, values)
+        } catch (error) {
+            console.error('Erro ao buscar usuário:', error);
+            return res.status(500).json({ error: 'Erro interno no servidor' });
+        }
+
     }
 }
 

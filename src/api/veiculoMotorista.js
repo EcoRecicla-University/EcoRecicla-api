@@ -67,6 +67,21 @@ class ApiVeiculoMotorista {
             });
         });
     }
+
+    excluirVeiculoMotorista(id){
+        return new Promise((resolve, reject) => {
+
+            const sql = 'DELETE FROM veiculo_motorista WHERE ID_Veiculo_Motorista = ?';
+            connection.query(sql, [id], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na exclusao: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
 }
 
 module.exports = new ApiVeiculoMotorista();

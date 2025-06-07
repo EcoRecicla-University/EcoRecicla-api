@@ -22,9 +22,9 @@ class ApiColeta {
     listarTodosHabilitadas() {
 
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT c.Nome AS Nome, t.* from coletas t  INNER JOIN clientes c ON t.ID_Cliente = c.ID_Cliente Where Status_Coleta != ?';
+            const sql = 'SELECT c.Nome AS Nome, t.* from coletas t  INNER JOIN clientes c ON t.ID_Cliente = c.ID_Cliente Where Status_Coleta != ? and Status_Coleta != ?';
             
-            connection.query(sql,['CA'], (err, rows) => {
+            connection.query(sql,['CA', 'CO'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);

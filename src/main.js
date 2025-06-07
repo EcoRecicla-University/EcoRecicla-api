@@ -638,7 +638,7 @@ app.put('/api/rota/:id', async (req, res) => {
     try {
         const motoristaVeiculoId = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(idMotorista,idVeiculo)
         
-        ApiVeiculoMotorista.editarMotoristaVeiculo(motoristaVeiculoId, idMotorista, idVeiculo)
+        await ApiVeiculoMotorista.editarMotoristaVeiculo(motoristaVeiculoId, idMotorista, idVeiculo)
         ApiRota.editarRota(parseInt(idRota), parseInt(idColeta), parseInt(idFuncionario), parseInt(idCentroInicio), parseInt(idCentroFim))
         res.status(200).json({ success: true })
     } catch(error) {
@@ -654,7 +654,9 @@ app.delete('/api/rota/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
-        ApiRota.excluirRota(id)
+        const rota = await ApiRota.getRotaById(id);
+        await ApiRota.excluirRota(id)
+        await ApiVeiculoMotorista.excluirVeiculoMotorista(rota.ID_Veiculo_Motorista)
         res.status(200).json({ success: true })
     } catch(error){
         console.error('Erro ao excluir rota:', error);
