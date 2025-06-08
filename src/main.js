@@ -427,6 +427,12 @@ app.delete('/api/motoristas/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
+        const motoristaEmVeiculoMotorista = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(id, null)
+
+        if(motoristaEmVeiculoMotorista.length > 0){
+            throw new Error('Esse motorista está sendo usado em uma rota.')
+        }
+
         ApiMotoristas.excluirMotorista(id)
         res.status(200).json({ success: true })
     } catch(error){
