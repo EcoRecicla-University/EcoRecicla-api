@@ -230,6 +230,40 @@ app.get('/api/veiculos', async (req, res) => {
     }
 });
 
+// Buscar veiculo por ID
+app.get('/api/veiculos/:id', async (req, res) => {
+
+    try {
+        const idVeiculo = req.params.id;
+    
+        const dadosVeiculo = await apiVeiculo.getVeiculoById(parseInt(idVeiculo))
+        res.json(dadosVeiculo);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
+
+// Editar Veiculo
+app.put('/api/veiculos/:id', (req, res) => {
+    const id = req.params.id;
+    const placa = req.body.Placa;
+    const modelo = req.body.Modelo;
+    const quilometragem = req.body.Quilometragem;
+    const renavam = req.body.Renavam;
+    const capacidade = req.body.Capacidade_em_Kg;
+
+    try {
+        apiVeiculo.editarVeiculo(parseInt(id), placa, modelo, quilometragem, renavam, capacidade)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar veiculo:', error);
+
+        const message = error.message ?? 'Erro ao editar veiculo'
+        return res.status(500).json({ error: message });
+    }
+});
 
 // Funcionarios -----------------------------------------------------------------------------------------------------------------------
 

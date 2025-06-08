@@ -57,6 +57,44 @@ class ApiVeiculo {
             });
         });
     }
+
+    getVeiculoById(idVeiculo) {
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT * FROM veiculos WHERE ID_Veiculo = ?;', [idVeiculo], (err, row) => {
+            
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                const veiculo = row[0];
+                
+                if (veiculo) {
+                    return resolve(veiculo);
+                }
+                
+                return resolve(null);
+            });
+        });
+    }
+
+    editarVeiculo(id, placa, modelo, quilometragem, renavam, capacidade) {
+
+        veiculoValidator.validarCriacaoVeiculo(placa, modelo, quilometragem, renavam, capacidade)
+
+        const sql = 'UPDATE veiculos set '
+        + 'Placa = ?, Modelo = ?, Quilometragem = ?, Renavam = ?, Capacidade_em_Kg = ? '
+        + 'WHERE ID_Veiculo = ?'
+
+        const values = [
+            placa,
+            modelo,
+            quilometragem,
+            renavam,
+            capacidade,
+            id
+        ]
+        connection.execute(sql, values);
+    }
 }
 
 module.exports = new ApiVeiculo();

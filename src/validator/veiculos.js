@@ -41,9 +41,6 @@ class VeiculoValidator {
                 throw new Error('Capacidade deve ter no máximo 6 caracteres')
             }
         }
-        // if(!idMotorista || !idMotorista){
-        //     throw new Error('Motorista é obrigatório')
-        // }
     }
 
 }
