@@ -87,6 +87,22 @@ class ApiEndereco {
 
         connection.execute(sql, values)
     }
+
+    buscarEnderecoDaTriagem(idTriagem){
+
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * from Endereco WHERE ID_Centro = ?';
+            connection.query(sql, [idTriagem], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows[0]);
+            });
+        });
+
+    }
 }
 
 module.exports = new ApiEndereco();

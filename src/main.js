@@ -627,6 +627,24 @@ app.get('/api/triagem', async (req, res) => {
     }
 });
 
+// Buscar centro por ID
+app.get('/api/triagem/:id', async (req, res) => {
+
+    try {
+        const id = req.params.id;
+    
+        const dadosTriagem = await ApiTriagem.getTriagemById(parseInt(id))
+        const enderecoTriagem = await ApiEndereco.buscarEnderecoDaTriagem(id)
+
+        dadosTriagem.Endereco = enderecoTriagem
+
+        res.json(dadosTriagem);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
 
 // Rotas --------------------------------------------------------------------------------------------------------------
 

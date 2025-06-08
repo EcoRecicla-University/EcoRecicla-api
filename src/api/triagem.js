@@ -53,6 +53,25 @@ class ApiTriagem {
             throw new Error('Erro ao cadastrar centro de triagem')
         }
     }
+
+    getTriagemById(idTriagem) {
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT * FROM centros WHERE ID_Centro = ?;', [idTriagem], (err, row) => {
+            
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                const triagem = row[0];
+                
+                if (triagem) {
+                    return resolve(triagem);
+                }
+                
+                return resolve(null);
+            });
+        });
+    }
 }
 
 module.exports = new ApiTriagem();
