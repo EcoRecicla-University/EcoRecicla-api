@@ -41,6 +41,35 @@ class ApiVeiculoMotorista {
 
     verificarExistenciaMotoristaVeiculo(idMotorista, idVeiculo) {
         return new Promise((resolve, reject) => {
+
+            if(idVeiculo && idMotorista == null){
+
+                const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Veiculo = ?'
+                connection.query(sql, [idVeiculo], (err, rows) => {
+
+                    if (err) {
+                        return reject('Erro na consulta: ' + err);
+                    }
+                    
+                    return resolve(rows);
+                });
+
+            }
+
+            if(idMotorista && idVeiculo == null){
+
+                const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Motorista = ?'
+                connection.query(sql, [idMotorista], (err, rows) => {
+
+                    if (err) {
+                        return reject('Erro na consulta: ' + err);
+                    }
+                    
+                    return resolve(rows);
+                });
+
+            }
+
             const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Motorista = ? and ID_Veiculo = ?';
             connection.query(sql, [idMotorista, idVeiculo], (err, rows) => {
 

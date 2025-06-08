@@ -95,6 +95,14 @@ class ApiVeiculo {
         ]
         connection.execute(sql, values);
     }
+
+    excluirVeiculo(id) {
+
+        const sql = 'DELETE from veiculos WHERE ID_Veiculo = ?'
+        const values = [id]
+
+        connection.execute(sql, values)
+    }
 }
 
 module.exports = new ApiVeiculo();

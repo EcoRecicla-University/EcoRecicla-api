@@ -265,6 +265,29 @@ app.put('/api/veiculos/:id', (req, res) => {
     }
 });
 
+// Deletar veiculo
+app.delete('/api/veiculos/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+
+        const veiculoEmVeiculoMotorista = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(null, id)
+
+        if(veiculoEmVeiculoMotorista.length > 0){
+            throw new Error('Esse veículo está sendo usado em uma rota.')
+        }
+
+        apiVeiculo.excluirVeiculo(id)
+
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir veiculo:', error);
+
+        const message = error.message ?? 'Erro ao excluir veiculo'
+        return res.status(500).json({ error: message });
+    }
+});
+
 // Funcionarios -----------------------------------------------------------------------------------------------------------------------
 
 // Buscar todos os funcionarios
