@@ -72,6 +72,23 @@ class ApiTriagem {
             });
         });
     }
+
+    editarTriagem(id, nomeCentro, capacidade) {
+
+        triagemValidator.validarCriacao(nomeCentro, capacidade)
+
+        const sql = 'UPDATE centros set '
+        + 'Capaci_Armaze = ?, Nome_Centro = ? '
+        + 'WHERE ID_Centro = ?'
+
+        const values = [
+            capacidade,
+            nomeCentro,
+            id
+        ]
+
+        connection.execute(sql, values);
+    }
 }
 
 module.exports = new ApiTriagem();

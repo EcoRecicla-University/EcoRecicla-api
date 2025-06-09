@@ -646,6 +646,27 @@ app.get('/api/triagem/:id', async (req, res) => {
     }
 });
 
+// Editar centro
+app.put('/api/triagem/:id', async (req, res) => {
+    const id = req.params.id
+    const nomeCentro = req.body.Nome_Centro;
+    const capacidade = req.body.Capaci_Armaze;
+    const endereco = req.body.Endereco;
+
+    try {
+        ApiEndereco.editarEnderecoDaTriagem(id, endereco)
+        
+        ApiTriagem.editarTriagem(id, nomeCentro, capacidade)
+        res.status(200).json({ success: true })
+
+    } catch(error) {
+        console.error('Erro ao editar centro de triagem:', error);
+
+        const message = error.message ?? 'Erro ao editar centro de triagem'
+        return res.status(500).json({ error: message });
+    }
+});
+
 // Rotas --------------------------------------------------------------------------------------------------------------
 
 // Criar rota

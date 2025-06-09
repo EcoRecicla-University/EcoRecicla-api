@@ -70,6 +70,24 @@ class ApiEndereco {
         connection.execute(sql, values)
     }
 
+    editarEnderecoDaTriagem(idTriagem, endereco) {
+
+        const sql = 'UPDATE Endereco SET CEP = ?, Logradouro = ?, Cidade = ?, Estado = ?, Numero = ?, Bairro = ?'
+        + ' WHERE ID_Centro = ?'
+
+        const values = [
+            endereco.CEP,
+            endereco.Logradouro,
+            endereco.Cidade,
+            endereco.Estado,
+            endereco.Numero,
+            endereco.Bairro,
+            idTriagem
+        ]
+
+        connection.execute(sql, values)
+    }
+
     editarEnderecoDoCliente(idCliente, endereco) {
 
         const sql = 'UPDATE Endereco SET CEP = ?, Logradouro = ?, Cidade = ?, Estado = ?, Numero = ?, Bairro = ?'
