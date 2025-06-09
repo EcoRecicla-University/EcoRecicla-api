@@ -1,14 +1,15 @@
 const connection = require('../core/connection.js');
-const triagemValidator = require('../validator/triagem.js')
+const triagemValidator = require('../validator/triagem.js');
 
 class ApiTriagem {
 
     listarTodos() {
 
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT e.Cidade, c.* from centros c INNER JOIN endereco e ON c.ID_Centro = e.ID_Centro;';
-            
-            connection.query(sql,(err, rows) => {
+            const sql = 'SELECT e.Cidade, c.* from centros c INNER JOIN endereco e ON c.ID_Centro = e.ID_Centro WHERE Status_Centro = ?;';
+            const values = ['A']
+
+            connection.query(sql, values, (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -26,12 +27,13 @@ class ApiTriagem {
         try{
 
             const sql = 'INSERT INTO centros '
-            + '(Capaci_Armaze, Nome_Centro)'
-            + ' VALUES (?, ?)';
+            + '(Capaci_Armaze, Nome_Centro, Status_Centro)'
+            + ' VALUES (?, ?, ?)';
 
             const values = [
                 capacidade,
-                nomeCentro
+                nomeCentro,
+                'A'
             ];
             
             return new Promise((resolve, reject) => {
@@ -88,6 +90,16 @@ class ApiTriagem {
         ]
 
         connection.execute(sql, values);
+    }
+
+    
+    excluirTriagem(id) {
+        
+        const sql = 'UPDATE centros SET Status_Centro = ? WHERE ID_Centro = ?'
+        const values = ['I', id]
+
+        connection.execute(sql, values)
+
     }
 }
 

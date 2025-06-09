@@ -9,13 +9,14 @@ class ApiMotoristas {
         motoristaValidator.validarCriacao(idFuncionario, categoria, numeroRogistro, validadeCarteira)
 
         const sql = 'INSERT INTO motoristas '
-        + '(ID_Funci, Numero_Registro, Categoria, Validade)'
-        + ' VALUES (?, ?, ?, ?)';
+        + '(ID_Funci, Numero_Registro, Categoria, Validade, Status_Motorista)'
+        + ' VALUES (?, ?, ?, ?, ?)';
         const values = [
             idFuncionario,
             numeroRogistro,
             categoria,
-            validadeCarteira
+            validadeCarteira,
+            'A'
         ];
 
         connection.execute(sql, values);
@@ -24,8 +25,8 @@ class ApiMotoristas {
     listarTodos(){
 
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT f.Nome AS Nome, m.* from motoristas m INNER JOIN funcionarios f ON m.ID_Funci = f.ID_Funci';
-            connection.query(sql, (err, rows) => {
+            const sql = 'SELECT f.Nome AS Nome, m.* from motoristas m INNER JOIN funcionarios f ON m.ID_Funci = f.ID_Funci WHERE Status_Motorista = ?';
+            connection.query(sql, ['A'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -116,8 +117,8 @@ class ApiMotoristas {
 
     excluirMotorista(id) {
 
-        const sql = 'DELETE from motoristas WHERE ID_Motorista = ?'
-        const values = [id]
+        const sql = 'UPDATE motoristas SET Status_Motorista = ? WHERE ID_Motorista = ?'
+        const values = ['I', id]
 
         connection.execute(sql, values)
     }

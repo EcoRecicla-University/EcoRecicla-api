@@ -667,6 +667,31 @@ app.put('/api/triagem/:id', async (req, res) => {
     }
 });
 
+// Excluir centro
+app.delete('/api/triagem/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+
+        const triagemEmRota = await ApiRota.buscarTriagemEmRota(id)
+
+        if(triagemEmRota.length > 0){
+            throw new Error('Não pode excluir esse Centro de Triagem porque ele esta incluso em uma rota.')
+        }
+
+        ApiEndereco.excluirEnderecoDaTriagem(id)
+        ApiTriagem.excluirTriagem(id)
+
+        res.status(200).json({ success: true })
+
+    } catch(error){
+        console.error('Erro ao excluir centro de triagem:', error);
+
+        const message = error.message ?? 'Erro ao excluir centro de triagem'
+        return res.status(500).json({ error: message });
+    }
+});
+
 // Rotas --------------------------------------------------------------------------------------------------------------
 
 // Criar rota

@@ -9,8 +9,8 @@ class ApiVeiculo {
         veiculoValidator.validarCriacaoVeiculo(placa, modelo, quilometragem, renavam, capacidade)
 
         const sql = 'INSERT INTO Veiculos'
-        + '(Placa, Modelo, Quilometragem, Renavam, Capacidade_em_Kg)'
-        + ' VALUES (?, ?, ?, ?, ?)';
+        + '(Placa, Modelo, Quilometragem, Renavam, Capacidade_em_Kg, Status_Veiculo)'
+        + ' VALUES (?, ?, ?, ?, ?, ?)';
 
         
         const values = [
@@ -18,7 +18,8 @@ class ApiVeiculo {
             modelo,
             quilometragem,
             renavam,
-            capacidade
+            capacidade,
+            'A'
         ];
         connection.execute(sql, values);
     }
@@ -26,7 +27,7 @@ class ApiVeiculo {
     listarTodos() {
 
         return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM Veiculos', (err, rows) => {
+            connection.query('SELECT * FROM Veiculos WHERE Status_Veiculo = ?',['A'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -98,8 +99,8 @@ class ApiVeiculo {
 
     excluirVeiculo(id) {
 
-        const sql = 'DELETE from veiculos WHERE ID_Veiculo = ?'
-        const values = [id]
+        const sql = 'UPDATE veiculos set Status_Veiculo = ? WHERE ID_Veiculo = ?'
+        const values = ['I', id]
 
         connection.execute(sql, values)
     }

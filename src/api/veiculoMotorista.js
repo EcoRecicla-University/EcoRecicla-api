@@ -10,12 +10,13 @@ class ApiVeiculoMotorista {
         try{
 
             const sql = 'INSERT INTO veiculo_motorista '
-            + '(ID_Motorista, ID_Veiculo)'
-            + ' VALUES (?, ?)';
+            + '(ID_Motorista, ID_Veiculo, Status_Veiculo_Motorista)'
+            + ' VALUES (?, ?, ?)';
             
             const values = [
                 idMotorista,
-                idVeiculo
+                idVeiculo,
+                'A'
             ];
             
             return new Promise((resolve, reject) => {
@@ -44,8 +45,8 @@ class ApiVeiculoMotorista {
 
             if(idVeiculo && idMotorista == null){
 
-                const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Veiculo = ?'
-                connection.query(sql, [idVeiculo], (err, rows) => {
+                const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Veiculo = ? and Status_Veiculo_Motorista = ?'
+                connection.query(sql, [idVeiculo, 'A'], (err, rows) => {
 
                     if (err) {
                         return reject('Erro na consulta: ' + err);
@@ -58,8 +59,8 @@ class ApiVeiculoMotorista {
 
             if(idMotorista && idVeiculo == null){
 
-                const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Motorista = ?'
-                connection.query(sql, [idMotorista], (err, rows) => {
+                const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Motorista = ? and Status_Veiculo_Motorista = ?'
+                connection.query(sql, [idMotorista, 'A'], (err, rows) => {
 
                     if (err) {
                         return reject('Erro na consulta: ' + err);
@@ -70,8 +71,8 @@ class ApiVeiculoMotorista {
 
             }
 
-            const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE ID_Motorista = ? and ID_Veiculo = ?';
-            connection.query(sql, [idMotorista, idVeiculo], (err, rows) => {
+            const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE (ID_Motorista = ? and ID_Veiculo = ?) and Status_Veiculo_Motorista = ?';
+            connection.query(sql, [idMotorista, idVeiculo, 'A'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -100,8 +101,8 @@ class ApiVeiculoMotorista {
     excluirVeiculoMotorista(id){
         return new Promise((resolve, reject) => {
 
-            const sql = 'DELETE FROM veiculo_motorista WHERE ID_Veiculo_Motorista = ?';
-            connection.query(sql, [id], (err, rows) => {
+            const sql = 'UPDATE veiculo_motorista SET Status_Veiculo_Motorista = ? WHERE ID_Veiculo_Motorista = ?';
+            connection.query(sql, ['I', id], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na exclusao: ' + err);

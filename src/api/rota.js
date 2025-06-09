@@ -91,7 +91,7 @@ class ApiRota {
         
         try{
 
-            const sql = 'UPDATE rotas set Status_Rota = ?, ID_Veiculo_Motorista = null WHERE ID_Rota = ?'
+            const sql = 'UPDATE rotas set Status_Rota = ? WHERE ID_Rota = ?'
             const values = ['CA' ,id]
             connection.execute(sql, values)
 
@@ -99,6 +99,25 @@ class ApiRota {
             console.error('Erro ao buscar usuário:', error);
             return res.status(500).json({ error: 'Erro interno no servidor' });
         }
+
+    }
+
+    async buscarTriagemEmRota(idTriagem){
+        return new Promise((resolve, reject) => {
+
+            const sql = 'SELECT ID_Rota FROM rotas WHERE (ID_Centro_Inicio = ? or ID_Centro_Fim = ?) and Status_Rota != ?'
+            const values = [idTriagem, idTriagem, 'CA']
+
+            connection.execute(sql, values, (err, row) => {
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+
+                return resolve(row);
+
+            })
+    
+        })
 
     }
 }

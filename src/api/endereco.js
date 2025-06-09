@@ -4,8 +4,8 @@ class ApiEndereco {
 
     criarEnderecoCentroTriagem(IdTriagem, endereco) {
         const sql = 'INSERT INTO Endereco'
-        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro, Status_Endereco)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
         const values = [
             endereco.CEP,
@@ -16,7 +16,8 @@ class ApiEndereco {
             null,
             endereco.Bairro,
             'T',
-            IdTriagem
+            IdTriagem,
+            'A'
         ];
 
         connection.execute(sql, values);
@@ -25,8 +26,8 @@ class ApiEndereco {
     criarEnderecoCliente(idCliente, endereco){
 
         const sql = 'INSERT INTO Endereco'
-        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro)'
-        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        + '(CEP, Logradouro, Cidade, Estado, Numero, ID_Cliente, Bairro, Tipo_Endereco, ID_Centro, Status_Endereco)'
+        + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
         
         const values = [
@@ -38,7 +39,8 @@ class ApiEndereco {
             idCliente,
             endereco.Bairro,
             'C',
-            null
+            null,
+            'A'
         ];
 
 
@@ -63,9 +65,18 @@ class ApiEndereco {
 
     excluirEnderecoDoCliente(clienteId) {
 
-        const sql = 'DELETE from Endereco '
+        const sql = 'UPDATE endereco set Status_Endereco = ? '
         + 'WHERE ID_Cliente = ?'
-        const values = [clienteId]
+        const values = ['I', clienteId]
+
+        connection.execute(sql, values)
+    }
+
+    excluirEnderecoDaTriagem(idTriagem) {
+       
+        const sql = 'UPDATE endereco set Status_Endereco = ? '
+        + 'WHERE ID_Centro = ?'
+        const values = ['I', idTriagem]
 
         connection.execute(sql, values)
     }
