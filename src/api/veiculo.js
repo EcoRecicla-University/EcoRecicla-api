@@ -41,14 +41,17 @@ class ApiVeiculo {
     listarTodosDiponiveis() {
         return new Promise((resolve, reject) => {
 
-            const sql = `select v.* from veiculos v
-                LEFT JOIN veiculo_motorista m
-                ON v.ID_Veiculo = m.ID_Veiculo 
-                left JOIN rotas r
-                on m.ID_Veiculo_Motorista = r.ID_Veiculo_Motorista
-                Where m.ID_Veiculo is null or r.Status_Rota != ?`
+            // const sql = `SELECT * FROM veiculos v
+            //     LEFT JOIN veiculo_motorista vm
+            //     ON v.ID_Veiculo = vm.ID_Veiculo
+            //     WHERE vm.Status_Veiculo_Motorista != 'I'
+            //     AND v.Status_Veiculo != 'I';`
+            const sql = `SELECT v.* FROM veiculos v
+                LEFT JOIN veiculo_motorista vm
+                ON v.ID_Veiculo = vm.ID_Veiculo
+                WHERE vm.ID_Veiculo is null;`
 
-            connection.query(sql, ['AB'], (err, rows) => {
+            connection.query(sql, (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
