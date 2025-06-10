@@ -477,9 +477,9 @@ app.put('/api/motoristas/:id', (req, res) => {
     }
 });
 
-// MOVIMENTO DE ESTOQUE
+// Movimentacao -----------------------------------------------------------------------------------------------------------------------
 
-// Criar novo movimento de estoque
+// Criar nova movimentacao
 app.post('/api/movimen', async (req, res) => {
 
     const quantidade = req.body.Quantidade;
@@ -505,6 +505,16 @@ app.post('/api/movimen', async (req, res) => {
 
 app.get('/api/movimen', async (req, res) => {
     
+    const movimentacoes = await ApiMovimen.listarTodos()
+
+    try {
+        res.json(movimentacoes)
+    } catch(error) {
+        console.error('Erro ao buscar movimentacoes', error);
+        
+        return res.status(500).json({ error: message });
+    }
+
 })
 
 // Coleta -----------------------------------------------------------------------------------------------------------

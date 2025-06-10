@@ -3,40 +3,6 @@ const MovimenValidator = require('../validator/movimen.js')
 
 class ApiMovimen {
 
-    // listarTodos() {
-
-    //     return new Promise((resolve, reject) => {
-    //         connection.query('SELECT * FROM movimentacoes', (err, rows) => {
-
-    //             if (err) {
-    //                 return reject('Erro na consulta: ' + err);
-    //             }
-                
-    //             return resolve(rows);
-    //         });
-    //     });
-    // }
-    
-    // getMovimenById(idMovimen) {
-    
-    //     return new Promise((resolve, reject) => {
-    //         connection.query('SELECT * FROM movimentacoes WHERE ID_Movimen = ?', [idMovimen], (err, row) => {
-            
-    //             if (err) {
-    //                 return reject('Erro na consulta: ' + err);
-    //             }
-                
-    //             const movimen = row[0];
-                
-    //             if (movimen) {
-    //                 return resolve(movimen);
-    //             }
-                
-    //             return resolve(null);
-    //         });
-    //     });
-    // }
-
     criarNovaMovimen(quantidade, dataEntrada, idColeta, categoria, avisarEstoqueMax, avisarEstoqueMin){
 
         MovimenValidator.validarCriacao(quantidade, dataEntrada, idColeta, categoria)
@@ -69,6 +35,47 @@ class ApiMovimen {
 
         connection.execute(sql, values);
     }
+
+    listarTodos() {
+
+        return new Promise((resolve, reject) => {
+            connection.query(`
+                SELECT m.*, cli.Nome as Nome_Coleta FROM movimentacoes m
+                INNER JOIN coletas co
+                ON m.ID_Coleta = co.ID_Coleta
+                INNER JOIN clientes cli
+                ON cli.ID_Cliente = co.ID_Cliente WHERE Status_Movimentacao = ?;`, ['A'], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                return resolve(rows);
+            });
+        });
+    }
+    
+    // getMovimenById(idMovimen) {
+    
+    //     return new Promise((resolve, reject) => {
+    //         connection.query('SELECT * FROM movimentacoes WHERE ID_Movimen = ?', [idMovimen], (err, row) => {
+            
+    //             if (err) {
+    //                 return reject('Erro na consulta: ' + err);
+    //             }
+                
+    //             const movimen = row[0];
+                
+    //             if (movimen) {
+    //                 return resolve(movimen);
+    //             }
+                
+    //             return resolve(null);
+    //         });
+    //     });
+    // }
+
+    
 
     // editarMovimen(quantidade, dataEntrada) {
 
