@@ -20,7 +20,7 @@ class ApiMovimen {
         }
 
         const sql = 'INSERT INTO movimentacoes '
-        + '(Quantidade, Data_Entrada, ID_Coleta, Categoria, avisarEstoqueMax, avisarEstoqueMin, Status_Movimentacao)'
+        + '(Quantidade, Data_Entrada, ID_Coleta, Categoria, AvisarEstoqueMax, AvisarEstoqueMin, Status_Movimentacao)'
         + ' VALUES (?, ?, ?, ?, ?, ?, ?)';
         
         const values = [
@@ -55,25 +55,30 @@ class ApiMovimen {
         });
     }
     
-    // getMovimenById(idMovimen) {
+    getMovimenById(idMovimen) {
     
-    //     return new Promise((resolve, reject) => {
-    //         connection.query('SELECT * FROM movimentacoes WHERE ID_Movimen = ?', [idMovimen], (err, row) => {
+        return new Promise((resolve, reject) => {
+            connection.query(`
+                SELECT m.*, cli.Nome as Nome_Coleta FROM movimentacoes m
+                INNER JOIN coletas co
+                ON m.ID_Coleta = co.ID_Coleta
+                INNER JOIN clientes cli
+                ON cli.ID_Cliente = co.ID_Cliente WHERE ID_Movimen = ?;`, [idMovimen], (err, row) => {
             
-    //             if (err) {
-    //                 return reject('Erro na consulta: ' + err);
-    //             }
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
                 
-    //             const movimen = row[0];
+                const movimen = row[0];
                 
-    //             if (movimen) {
-    //                 return resolve(movimen);
-    //             }
+                if (movimen) {
+                    return resolve(movimen);
+                }
                 
-    //             return resolve(null);
-    //         });
-    //     });
-    // }
+                return resolve(null);
+            });
+        });
+    }
 
     
 

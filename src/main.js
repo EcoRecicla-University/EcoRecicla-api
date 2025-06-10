@@ -503,6 +503,7 @@ app.post('/api/movimen', async (req, res) => {
     
 });
 
+// Buscar todas as movimentacoes
 app.get('/api/movimen', async (req, res) => {
     
     const movimentacoes = await ApiMovimen.listarTodos()
@@ -516,6 +517,21 @@ app.get('/api/movimen', async (req, res) => {
     }
 
 })
+
+// Buscar movimentacao por ID
+app.get('/api/movimen/:id', async (req, res) => {
+
+    try {
+        const idMovimentacao = req.params.id;
+    
+        const dadosMovimentacao = await ApiMovimen.getMovimenById(parseInt(idMovimentacao))
+        res.json(dadosMovimentacao);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
 
 // Coleta -----------------------------------------------------------------------------------------------------------
 
