@@ -482,32 +482,29 @@ app.put('/api/motoristas/:id', (req, res) => {
 // Criar novo movimento de estoque
 app.post('/api/movimen', async (req, res) => {
 
-    const quantidade = req.body.quantidade;
-    const dataEntrada = req.body.dataEntrada;
-    try {
+    const quantidade = req.body.Quantidade;
+    const dataEntrada = req.body.Data_Entrada;
+    const idColeta = req.body.ID_Coleta;
+    const categoria = req.body.Categoria;
+    const avisarEstoqueMax = req.body.AvisarEstoqueMax;
+    const avisarEstoqueMin = req.body.AvisarEstoqueMin;
 
-        ApiMovimen.criarNovaMovimen(quantidade, dataEntrada)
+    try {
+        ApiMovimen.criarNovaMovimen(quantidade, dataEntrada, parseInt(idColeta), categoria, avisarEstoqueMax, avisarEstoqueMin)
         
         res.status(200).json({ success: true })
 
     } catch(error) {
-        console.error('Erro ao inserir nova movimentação:', error);
+        console.error('Erro ao inserir nova movimentacao:', error);
 
-        const message = error.message ?? 'Erro ao inserir novo centro'
+        const message = error.message ?? 'Erro ao inserir nova movimentacao'
         return res.status(500).json({ error: message });
     }
     
 });
 
 app.get('/api/movimen', async (req, res) => {
-    const idsColeta = await ApiMovimen.buscarColetas(idsColeta)
-    try {
-        res.json(idsColeta)
-    } catch(error) {
-        console.error('Erro ao buscar chave de coleta', error);
-        
-        return res.status(500).json({ error: message });
-    }
+    
 })
 
 // Coleta -----------------------------------------------------------------------------------------------------------
