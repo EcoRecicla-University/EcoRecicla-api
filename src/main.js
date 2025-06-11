@@ -15,6 +15,7 @@ const ApiEndereco = require('./api/endereco.js');
 const ApiColeta = require('./api/coleta.js');
 const ApiTriagem = require('./api/triagem.js');
 const ApiRota = require('./api/rota.js');
+const ApiEstoque = require('./api/estoque.js');
 const ApiVeiculoMotorista = require('./api/veiculoMotorista.js');
 const ApiReportsClientes = require('./api/reports/relatorioCliente.js');
 const ApiReportsColetas = require('./api/reports/relatorioColeta.js');
@@ -569,6 +570,22 @@ app.delete('/api/movimen/:id', async (req, res) => {
     }
 });
 
+// Estoque -----------------------------------------------------------------------------------------------------------
+
+// Buscar dados estoque por ID
+app.get('/api/estoque/:id', async (req, res) => {
+
+    try {
+        const idEstoque = req.params.id;
+    
+        const dadosEstoque = await ApiEstoque.getEstoqueById(parseInt(idEstoque))
+        res.json(dadosEstoque);
+
+    } catch(error) {
+        console.error('Erro na consulta:', error);
+        return res.status(500).json({ error: 'Erro na consulta ao banco de dados' });
+    }
+});
 
 // Coleta -----------------------------------------------------------------------------------------------------------
 
