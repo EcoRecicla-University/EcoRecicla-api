@@ -3,22 +3,22 @@ const MovimenValidator = require('../validator/movimen.js')
 
 class ApiMovimen {
 
-    criarNovaMovimen(quantidade, dataEntrada, idColeta, categoria, avisarEstoqueMax, avisarEstoqueMin){
+    criarNovaMovimen(quantidade, dataEntrada, idRota, categoria, avisarEstoqueMax, avisarEstoqueMin){
 
-        MovimenValidator.validarCriacao(quantidade, dataEntrada, idColeta, categoria)
+        MovimenValidator.validarCriacao(quantidade, dataEntrada, idRota, categoria)
 
         const sql = 'INSERT INTO movimentacoes '
-        + '(Quantidade, Data_Entrada, ID_Coleta, Categoria, AvisarEstoqueMax, AvisarEstoqueMin, Status_Movimentacao)'
+        + '(Quantidade, Data_Entrada, Categoria, AvisarEstoqueMax, AvisarEstoqueMin, Status_Movimentacao, ID_Rota)'
         + ' VALUES (?, ?, ?, ?, ?, ?, ?)';
         
         const values = [
             quantidade,
             dataEntrada,
-            idColeta,
             categoria,
             avisarEstoqueMax,
             avisarEstoqueMin,
-            'A'
+            'A',
+            idRota
         ];
 
         connection.execute(sql, values);
@@ -28,11 +28,14 @@ class ApiMovimen {
 
         return new Promise((resolve, reject) => {
             connection.query(`
-                SELECT m.*, cli.Nome as Nome_Coleta FROM movimentacoes m
+                SELECT m.*, cli.Nome as Nome FROM movimentacoes m
+                INNER JOIN rotas r
+                ON m.ID_Rota = r.ID_Rota 
                 INNER JOIN coletas co
-                ON m.ID_Coleta = co.ID_Coleta
+                ON r.ID_Coleta = co.ID_Coleta
                 INNER JOIN clientes cli
-                ON cli.ID_Cliente = co.ID_Cliente WHERE Status_Movimentacao = ?;`, ['A'], (err, rows) => {
+                ON co.ID_Cliente = cli.ID_Cliente
+                WHERE Status_Movimentacao = ?;`, ['A'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -47,11 +50,14 @@ class ApiMovimen {
     
         return new Promise((resolve, reject) => {
             connection.query(`
-                SELECT m.*, cli.Nome as Nome_Coleta FROM movimentacoes m
+                SELECT m.*, cli.Nome as Nome FROM movimentacoes m
+                INNER JOIN rotas r
+                ON m.ID_Rota = r.ID_Rota 
                 INNER JOIN coletas co
-                ON m.ID_Coleta = co.ID_Coleta
+                ON r.ID_Coleta = co.ID_Coleta
                 INNER JOIN clientes cli
-                ON cli.ID_Cliente = co.ID_Cliente WHERE ID_Movimen = ?;`, [idMovimen], (err, row) => {
+                ON co.ID_Cliente = cli.ID_Cliente
+                WHERE ID_Movimen = ?;`, [idMovimen], (err, row) => {
             
                 if (err) {
                     return reject('Erro na consulta: ' + err);
@@ -70,18 +76,18 @@ class ApiMovimen {
 
     
 
-    editarMovimen(idMovimentacao, idColeta, quantidade, dataEntrada, categoria, avisarEstoqueMax, avisarEstoqueMin) {
+    editarMovimen(idMovimentacao, idRota, quantidade, dataEntrada, categoria, avisarEstoqueMax, avisarEstoqueMin) {
 
-        MovimenValidator.validarCriacao(idColeta, quantidade, dataEntrada, categoria)
+        MovimenValidator.validarCriacao(idRota, quantidade, dataEntrada, categoria)
 
         const sql = 'UPDATE movimentacoes set '
-        + 'Quantidade = ?, Data_Entrada = ?, ID_Coleta = ?, Categoria = ?, AvisarEstoqueMax = ?, AvisarEstoqueMin = ? '
+        + 'Quantidade = ?, Data_Entrada = ?, ID_Rota = ?, Categoria = ?, AvisarEstoqueMax = ?, AvisarEstoqueMin = ? '
         + 'WHERE ID_Movimen = ?'
 
         const values = [
             quantidade,
             dataEntrada,
-            idColeta,
+            idRota,
             categoria,
             avisarEstoqueMax,
             avisarEstoqueMin,

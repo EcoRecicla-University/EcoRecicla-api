@@ -31,11 +31,13 @@ class ApiRota {
                     c1.Nome_Centro AS CentroInicioNome, 
                     r.ID_Centro_Fim AS CentroFim,
                     c2.Nome_Centro AS CentroFimNome,
-                    c.Data_Coleta
+                    c.Data_Coleta,
+                    cli.Nome AS Nome
                 FROM rotas r  
                 INNER JOIN centros c1 ON r.ID_Centro_Inicio = c1.ID_Centro
                 INNER JOIN centros c2 ON r.ID_Centro_Fim = c2.ID_Centro
-                INNER JOIN coletas c ON r.ID_Coleta = c.ID_Coleta WHERE Status_Rota != ?;`;
+                INNER JOIN coletas c ON r.ID_Coleta = c.ID_Coleta
+                INNER JOIN clientes cli ON c.ID_Cliente = cli.ID_Cliente WHERE Status_Rota != ?;`;
 
             connection.query(sql, ['CA'], (err, rows) => {
 

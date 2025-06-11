@@ -484,13 +484,13 @@ app.post('/api/movimen', async (req, res) => {
 
     const quantidade = req.body.Quantidade;
     const dataEntrada = req.body.Data_Entrada;
-    const idColeta = req.body.ID_Coleta;
+    const idRota = req.body.ID_Rota;
     const categoria = req.body.Categoria;
     const avisarEstoqueMax = req.body.AvisarEstoqueMax;
     const avisarEstoqueMin = req.body.AvisarEstoqueMin;
 
     try {
-        ApiMovimen.criarNovaMovimen(quantidade, dataEntrada, parseInt(idColeta), categoria, avisarEstoqueMax, avisarEstoqueMin)
+        ApiMovimen.criarNovaMovimen(quantidade, dataEntrada, parseInt(idRota), categoria, avisarEstoqueMax, avisarEstoqueMin)
         
         res.status(200).json({ success: true })
 
@@ -538,13 +538,13 @@ app.put('/api/movimen/:id', (req, res) => {
     const idMovimentacao = req.params.id;
     const quantidade = req.body.Quantidade;
     const dataEntrada = req.body.Data_Entrada;
-    const idColeta = req.body.ID_Coleta;
+    const idRota = req.body.ID_Rota;
     const categoria = req.body.Categoria;
     const avisarEstoqueMax = req.body.AvisarEstoqueMax;
     const avisarEstoqueMin = req.body.AvisarEstoqueMin;
 
     try {
-        ApiMovimen.editarMovimen(parseInt(idMovimentacao), parseInt(idColeta), quantidade, dataEntrada, categoria, avisarEstoqueMax, avisarEstoqueMin)
+        ApiMovimen.editarMovimen(parseInt(idMovimentacao), parseInt(idRota), quantidade, dataEntrada, categoria, avisarEstoqueMax, avisarEstoqueMin)
         res.status(200).json({ success: true })
     } catch(error) {
         console.error('Erro ao editar movimentacao:', error);
