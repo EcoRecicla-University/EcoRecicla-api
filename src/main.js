@@ -533,6 +533,27 @@ app.get('/api/movimen/:id', async (req, res) => {
     }
 });
 
+// Editar movimentacao
+app.put('/api/movimen/:id', (req, res) => {
+    const idMovimentacao = req.params.id;
+    const quantidade = req.body.Quantidade;
+    const dataEntrada = req.body.Data_Entrada;
+    const idColeta = req.body.ID_Coleta;
+    const categoria = req.body.Categoria;
+    const avisarEstoqueMax = req.body.AvisarEstoqueMax;
+    const avisarEstoqueMin = req.body.AvisarEstoqueMin;
+
+    try {
+        ApiMovimen.editarMovimen(parseInt(idMovimentacao), parseInt(idColeta), quantidade, dataEntrada, categoria, avisarEstoqueMax, avisarEstoqueMin)
+        res.status(200).json({ success: true })
+    } catch(error) {
+        console.error('Erro ao editar movimentacao:', error);
+
+        const message = error.message ?? 'Erro ao editar movimentacao'
+        return res.status(500).json({ error: message });
+    }
+});
+
 // Coleta -----------------------------------------------------------------------------------------------------------
 
 // criar nova coleta

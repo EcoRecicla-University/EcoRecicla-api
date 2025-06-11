@@ -7,18 +7,6 @@ class ApiMovimen {
 
         MovimenValidator.validarCriacao(quantidade, dataEntrada, idColeta, categoria)
 
-        if(avisarEstoqueMax == true){
-            avisarEstoqueMax = 'S';
-        } else{
-            avisarEstoqueMax = 'N';
-        }
-
-        if(avisarEstoqueMin == true){
-            avisarEstoqueMin = 'S';
-        } else{
-            avisarEstoqueMin = 'N';
-        }
-
         const sql = 'INSERT INTO movimentacoes '
         + '(Quantidade, Data_Entrada, ID_Coleta, Categoria, AvisarEstoqueMax, AvisarEstoqueMin, Status_Movimentacao)'
         + ' VALUES (?, ?, ?, ?, ?, ?, ?)';
@@ -82,21 +70,26 @@ class ApiMovimen {
 
     
 
-    // editarMovimen(quantidade, dataEntrada) {
+    editarMovimen(idMovimentacao, idColeta, quantidade, dataEntrada, categoria, avisarEstoqueMax, avisarEstoqueMin) {
 
-    //     MovimenValidator.validarCriacao(quantidade, dataEntrada)
+        MovimenValidator.validarCriacao(idColeta, quantidade, dataEntrada, categoria)
 
-    //     const sql = 'UPDATE movimentacoes set'
-    //     + 'Quantidade = ?, Data_Entrada = ?'
-    //     + 'WHERE ID_Movimen = ?'
+        const sql = 'UPDATE movimentacoes set '
+        + 'Quantidade = ?, Data_Entrada = ?, ID_Coleta = ?, Categoria = ?, AvisarEstoqueMax = ?, AvisarEstoqueMin = ? '
+        + 'WHERE ID_Movimen = ?'
 
-    //     const values = [
-    //         quantidade,
-    //         dataEntrada,
-    //         id
-    //     ]
-    //     connection.execute(sql, values);
-    // }
+        const values = [
+            quantidade,
+            dataEntrada,
+            idColeta,
+            categoria,
+            avisarEstoqueMax,
+            avisarEstoqueMin,
+            idMovimentacao
+        ]
+
+        connection.execute(sql, values);
+    }
 
     // excluirMovimen(id) {
 
