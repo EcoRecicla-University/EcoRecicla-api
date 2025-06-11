@@ -554,6 +554,22 @@ app.put('/api/movimen/:id', (req, res) => {
     }
 });
 
+// Deletar movimentacao
+app.delete('/api/movimen/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        ApiMovimen.excluirMovimen(id)
+        res.status(200).json({ success: true })
+    } catch(error){
+        console.error('Erro ao excluir movimentacao:', error);
+
+        const message = error.message ?? 'Erro ao excluir movimentacao'
+        return res.status(500).json({ error: message });
+    }
+});
+
+
 // Coleta -----------------------------------------------------------------------------------------------------------
 
 // criar nova coleta

@@ -91,14 +91,14 @@ class ApiMovimen {
         connection.execute(sql, values);
     }
 
-    // excluirMovimen(id) {
+    excluirMovimen(id) {
 
-    //     const sql = 'DELETE from movimentacoes '
-    //     + 'WHERE ID_Movimen = ?'
-    //     const values = [id]
+        const sql = 'UPDATE movimentacoes SET Status_Movimentacao = ? '
+        + 'WHERE ID_Movimen = ?'
+        const values = ['I', id]
 
-    //     connection.execute(sql, values)
-    // }
+        connection.execute(sql, values)
+    }
 
 }
 
