@@ -31,7 +31,13 @@ class ApiReportsClientes {
                 { header: 'Numero', key: 'Numero', width: 15 },
             ];
 
-            clientes.forEach((cliente) => {
+                clientes.forEach((cliente) => {
+                const label = {
+                    'C': 'Compra',
+                    'V': 'Venda',
+                    'A': 'Ambos'
+                };
+                cliente.Tipo_Cliente = label[cliente.Tipo_Cliente];
                 worksheet.addRow(cliente);
             });
 
