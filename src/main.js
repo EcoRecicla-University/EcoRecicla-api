@@ -72,8 +72,8 @@ app.post('/api/recuperacao-senha', async (req, res) => {
 
         if (usuarioRecEncontrado) {
             const senhaTemporaria = utils.gerarSenhaTemporaria()
-           
-            await apiLogin.atualizarSenha(email, senhaTemporaria);
+            
+            await apiLogin.atualizarSenha(usuarioRecEncontrado.ID_Funci, senhaTemporaria);
 
             return res.status(200).json({ message: 'Senha temporária atualizada com sucesso. Verifique seu email.', success: true });
         } else {
