@@ -13,10 +13,14 @@ class Utils {
         return tokenExpiracao
     }
 
-    gerarSenhaTemporaria(){
-        const senhaRandom = parseInt(Math.random() * 90000 + 10000).toString();
-
-        return senhaRandom
+    gerarSenhaTemporaria() {
+        const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let senha = '';
+        for (let i = 0; i < 10; i++) {
+            const index = Math.floor(Math.random() * caracteres.length);
+            senha += caracteres[index];
+        }
+        return senha;
     }
 }
 
