@@ -19,6 +19,7 @@ const ApiEstoque = require('./api/estoque.js');
 const ApiVeiculoMotorista = require('./api/veiculoMotorista.js');
 const ApiReportsClientes = require('./api/reports/relatorioCliente.js');
 const ApiReportsColetas = require('./api/reports/relatorioColeta.js');
+const ApiReportsFuncionarios = require('./api/reports/relatorioFuncionarios.js');
 
 
 app.use(cors());
@@ -875,6 +876,11 @@ app.delete('/api/rota/:id', async (req, res) => {
 // Criar relatorio de clientes em excel
 app.get('/api/relatorio/clientes', (req, res) => {
     ApiReportsClientes.gerarRelatorioClientesExcel(req, res);
+});
+
+// Criar relatorio de funcionario em excel
+app.get('/api/relatorio/funcionarios', (req, res) => {
+    ApiReportsFuncionarios.gerarRelatorioFuncionariosExcel(req, res);
 });
 
 app.post('/api/relatorio/coleta', async (req, res) => {
