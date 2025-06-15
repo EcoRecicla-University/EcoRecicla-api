@@ -15,7 +15,7 @@ class apiLogin {
 
     async getUsuarioPorEmail(email) {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT ID_Funci, Email, Senha FROM funcionarios WHERE email = ?', [email], (err, rows) => {
+            connection.query('SELECT ID_Funci, Nome, Email, Senha FROM funcionarios WHERE email = ?', [email], (err, rows) => {
                 if (err) {
                     reject('Erro na consulta: ' + err);
                 } else {

@@ -4,6 +4,8 @@ const app = express();
 
 const utils = require('./core/utils.js')
 
+const env = require('./env/environment.js');
+
 const apiCliente = require('./api/cliente.js');
 const apiLogin = require('./api/login.js');
 const apiSessao = require('./api/sessao.js');
@@ -75,7 +77,36 @@ app.post('/api/recuperacao-senha', async (req, res) => {
             
             await apiLogin.atualizarSenha(usuarioRecEncontrado.ID_Funci, senhaTemporaria);
 
-            return res.status(200).json({ message: 'Senha temporária atualizada com sucesso. Verifique seu email.', success: true });
+            const emailServerUrl = `${env.emailServer.url}/usuario/redefinir-senha`;
+            const emailServerPayload = {
+                usuarioEmail: usuarioRecEncontrado.Email,
+                usuarioNome: usuarioRecEncontrado.Nome,
+                usuarioSenhaTemporaria: senhaTemporaria,
+            };
+
+            const emailServerRequestHeaders = new Headers();
+            emailServerRequestHeaders.append('Content-Type', 'application/json');
+
+            const emailServerResponse = await fetch(emailServerUrl, {
+                method: 'POST',
+                headers: emailServerRequestHeaders,
+                body: JSON.stringify(emailServerPayload)
+            })
+            .then(res => res.json())
+            .catch(err => {
+                const message = err?.message ?? err?.error?.message ?? 'API - Erro ao enviar e-mail';
+                return {
+                    success: false,
+                    message: message
+                };
+            });
+
+            if (emailServerResponse.success) {
+                return res.status(200).json({ message: 'Senha temporária atualizada com sucesso. Verifique seu email.', success: true });
+            } else {
+                return res.status(500).json({ message: emailServerResponse.message, success: false });
+            }
+
         } else {
             return res.status(401).json({ message: 'Usuário não encontrado na base de dados', success: false });
         }

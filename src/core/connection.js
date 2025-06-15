@@ -1,10 +1,11 @@
 const mysql = require('mysql2');
+const env = require('../env/environment.js');
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'ecorecicla-local',
-    database: 'ecorecicla-db'
+    host: env.database.host,
+    user: env.database.user,
+    password: env.database.password,
+    database: env.database.database
 });
 
 connection.connect((err) => {
