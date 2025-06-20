@@ -33,10 +33,10 @@ class ApiFuncionarios {
         + ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             nome,
-            dataNascimento,
+            new Date(dataNascimento),
             cpf,
             rg,
-            dataContratacao,
+            new Date(dataContratacao),
             estadoCivil,
             telefone,
             email,
