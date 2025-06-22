@@ -41,16 +41,16 @@ class ApiMotoristas {
     listarTodosDiponiveis() {
         return new Promise((resolve, reject) => {
 
-            const sql = `select m.*, f.Nome AS Nome from motoristas m
-                LEFT JOIN veiculo_motorista v
-                ON m.ID_Motorista = v.ID_Motorista 
-                left JOIN rotas r
-                on v.ID_Veiculo_Motorista = r.ID_Veiculo_Motorista
-                Inner JOIn funcionarios f
-                on f.ID_Funci = m.ID_Funci
-                Where v.ID_Motorista is null or r.Status_Rota != ?;`
+            const sql = `SELECT m.*, f.Nome
+                FROM motoristas m
+                INNER JOIN funcionarios f
+                ON m.ID_Funci = f.ID_Funci
+                LEFT JOIN veiculo_motorista vm 
+                ON m.ID_Motorista = vm.ID_Motorista AND vm.Status_Veiculo_Motorista = ?
+                WHERE m.Status_Motorista != ?
+                AND vm.ID_Motorista IS NULL;`
 
-            connection.query(sql, ['AB'], (err, rows) => {
+            connection.query(sql, ['A', 'I'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);
