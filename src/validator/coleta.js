@@ -1,6 +1,6 @@
 class ColetaValidator {
 
-    validarCriacao(idCliente, dataColeta, quantidade, statusColeta) {
+    validarCriacao(idCliente, dataColeta, quantidade) {
         if(!idCliente) {
             throw new Error('Cliente é obrigatório')
         }
@@ -9,9 +9,6 @@ class ColetaValidator {
         }
         if(!quantidade || quantidade.length == 0) {
             throw new Error('Quantidade é obrigatório')
-        }
-        if(!statusColeta){
-            throw new Error('Status de coleta é obrigatório')
         }
     }
 

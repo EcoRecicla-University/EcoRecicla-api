@@ -46,12 +46,14 @@ class ApiVeiculo {
             //     ON v.ID_Veiculo = vm.ID_Veiculo
             //     WHERE vm.Status_Veiculo_Motorista != 'I'
             //     AND v.Status_Veiculo != 'I';`
-            const sql = `SELECT v.* FROM veiculos v
-                LEFT JOIN veiculo_motorista vm
-                ON v.ID_Veiculo = vm.ID_Veiculo
-                WHERE vm.ID_Veiculo is null;`
+            const sql = `SELECT v.*
+                    FROM veiculos v
+                    LEFT JOIN veiculo_motorista vm 
+                    ON v.ID_Veiculo = vm.ID_Veiculo AND vm.Status_Veiculo_Motorista = ?
+                    WHERE v.Status_Veiculo != ?
+                    AND vm.ID_Veiculo IS NULL;`
 
-            connection.query(sql, (err, rows) => {
+            connection.query(sql, ['A','I'], (err, rows) => {
 
                 if (err) {
                     return reject('Erro na consulta: ' + err);

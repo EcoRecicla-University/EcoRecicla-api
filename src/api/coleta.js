@@ -35,9 +35,9 @@ class ApiColeta {
         });
     }
 
-    criarNovaColeta(idCliente, dataColeta, quantidade, statusColeta){
+    criarNovaColeta(idCliente, dataColeta, quantidade){
 
-        ColetaValidator.validarCriacao(idCliente, dataColeta, quantidade, statusColeta)
+        ColetaValidator.validarCriacao(idCliente, dataColeta, quantidade)
 
         const sql = 'INSERT INTO coletas '
         + '(Data_Coleta, Quantidade, Status_Coleta, ID_Cliente)'
@@ -45,7 +45,7 @@ class ApiColeta {
         const values = [
             dataColeta,
             quantidade,
-            statusColeta,
+            'AB',
             idCliente
         ];
 
@@ -75,14 +75,13 @@ class ApiColeta {
     editarColeta(idColeta, idCliente, dataColeta, quantidade, statusColeta) {
 
         const sql = 'UPDATE coletas set '
-        + 'ID_Cliente = ?, Quantidade = ?, Data_Coleta = ?, Status_Coleta = ? '
+        + 'ID_Cliente = ?, Quantidade = ?, Data_Coleta = ? '
         + 'WHERE ID_Coleta = ?'
 
         const values = [
             idCliente,
             quantidade,
             new Date(dataColeta),
-            statusColeta,
             idColeta
         ]
         connection.execute(sql, values);
@@ -103,6 +102,54 @@ class ApiColeta {
                 return resolve(rows);
             });
         });
+    }
+
+    
+    definirStatusEmAndamentoColeta(idColeta){
+        
+        const sql = 'UPDATE Coletas SET Status_Coleta = ? WHERE ID_Coleta = ?;';
+
+        const values = [
+            'EA',
+            idColeta
+        ]
+
+        connection.execute(sql, values)
+    }
+
+    buscarIdColetaPorRota(idRota){
+        return new Promise((resolve, reject) => {
+
+            const sql = 'SELECT ID_Coleta FROM Rotas WHERE ID_Rota = ?'
+            
+            connection.query(sql, [idRota], (err, rows) => {
+
+                if (err) {
+                    return reject('Erro na consulta: ' + err);
+                }
+                
+                if (rows.length === 0) {
+                return reject('Nenhum resultado encontrado.');
+            }
+
+                resolve(rows[0].ID_Coleta);
+            });
+
+        })
+    }
+
+    definirStatusCanceladaColeta(idColeta){
+        
+        const sql = 'UPDATE coletas set '
+        + 'Status_Coleta = ? '
+        + 'WHERE ID_Coleta = ?'
+
+        const values = [,
+            'CA',
+            idColeta
+        ]
+        connection.execute(sql, values);
+
     }
 }
 

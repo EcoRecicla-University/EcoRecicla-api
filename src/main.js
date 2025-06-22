@@ -627,11 +627,10 @@ app.post('/api/coleta', async (req, res) => {
     const idCliente = req.body.Cliente_ID;
     const dataColeta = req.body.Data_Coleta;
     const quantidade = req.body.Quantidade;
-    const statusColeta = req.body.Status_Coleta;
 
     try {
 
-        ApiColeta.criarNovaColeta(idCliente, dataColeta, quantidade, statusColeta)
+        ApiColeta.criarNovaColeta(idCliente, dataColeta, quantidade)
         res.status(200).json({ success: true })
 
     } catch(error) {
@@ -823,6 +822,7 @@ app.post('/api/rota', async (req, res) => {
         const motoristaVeiculoId = await ApiVeiculoMotorista.criarVinculoVeiculoMotorista(idMotorista, idVeiculo)
 
         ApiRota.criarNovaRota(idColeta, motoristaVeiculoId , idFuncionario, idCentroInicio, idCentroFim)
+        ApiColeta.definirStatusEmAndamentoColeta(idColeta)
         res.status(200).json({ success: true , motoristaVeiculoId})
 
     } catch(error) {
@@ -890,9 +890,16 @@ app.delete('/api/rota/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
+        const idColeta = await ApiColeta.buscarIdColetaPorRota(id)
         const rota = await ApiRota.getRotaById(id);
+
+
+        ApiColeta.definirStatusCanceladaColeta(idColeta)    
+
         await ApiRota.excluirRota(id)
         await ApiVeiculoMotorista.excluirVeiculoMotorista(rota.ID_Veiculo_Motorista)
+        
+
         res.status(200).json({ success: true })
     } catch(error){
         console.error('Erro ao excluir rota:', error);
