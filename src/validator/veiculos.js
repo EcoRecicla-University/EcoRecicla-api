@@ -14,7 +14,7 @@ class VeiculoValidator {
             throw new Error('Modelo é obrigatório')
         } else {
             if(modelo.length > 20){
-                throw new Error('Modelo deve ter no máximo 20 caracteres')
+                throw new Error('Modelo deve ter no máximo 50 caracteres')
             }
         }
 
