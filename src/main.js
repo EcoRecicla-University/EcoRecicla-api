@@ -870,12 +870,12 @@ app.put('/api/rota/:id', async (req, res) => {
     const idCentroInicio = req.body.ID_Centro_Inicio;
     const idCentroFim = req.body.ID_Centro_Fim;
 
-
     try {
-        const motoristaVeiculoId = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(idMotorista,idVeiculo)
+        const motoristaVeiculo = await ApiVeiculoMotorista.verificarExistenciaMotoristaVeiculo(idMotorista,idVeiculo)
+        const motoristaVeiculoId = motoristaVeiculo[0]?.ID_Veiculo_Motorista;
         
         await ApiVeiculoMotorista.editarMotoristaVeiculo(motoristaVeiculoId, idMotorista, idVeiculo)
-        ApiRota.editarRota(parseInt(idRota), parseInt(idColeta), parseInt(idFuncionario), parseInt(idCentroInicio), parseInt(idCentroFim))
+        ApiRota.editarRota(parseInt(idRota), parseInt(idFuncionario), parseInt(idCentroInicio), parseInt(idCentroFim), parseInt(idColeta))
         res.status(200).json({ success: true })
     } catch(error) {
         console.error('Erro ao editar motorista e veiculo:', error);

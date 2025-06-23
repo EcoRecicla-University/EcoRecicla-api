@@ -53,8 +53,8 @@ class ApiVeiculoMotorista {
                     }
                     
                     return resolve(rows);
-                });
-
+                })
+                return;
             }
 
             if(idMotorista && idVeiculo == null){
@@ -68,7 +68,7 @@ class ApiVeiculoMotorista {
                     
                     return resolve(rows);
                 });
-
+                return;
             }
 
             const sql = 'SELECT ID_Veiculo_Motorista FROM veiculo_motorista WHERE (ID_Motorista = ? and ID_Veiculo = ?) and Status_Veiculo_Motorista = ?';
@@ -86,11 +86,11 @@ class ApiVeiculoMotorista {
 
     editarMotoristaVeiculo(idVeiculoMotorista, idMotorista, idVeiculo) {
         return new Promise((resolve, reject) => {
-            const sql = 'UPDATE veiculo_motorista SET ID_Motorista = ? and ID_Veiculo = ? WHERE ID_Veiculo_Motorista = ?';
+            const sql = 'UPDATE veiculo_motorista SET ID_Motorista = ?, ID_Veiculo = ? WHERE ID_Veiculo_Motorista = ?';
             connection.query(sql, [idMotorista, idVeiculo, idVeiculoMotorista], (err, rows) => {
 
                 if (err) {
-                    return reject('Erro na consulta: ' + err);
+                    return reject('Erro no update: ' + err);
                 }
                 
                 return resolve(rows);

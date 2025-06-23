@@ -71,7 +71,7 @@ class ApiRota {
         });
     }
 
-    editarRota(idRota, idFuncionario, idCentroInicio, idCentroFim) {
+    editarRota(idRota, idFuncionario, idCentroInicio, idCentroFim, idColeta) {
 
         // clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, pontoColeta, tipoCliente)
 
@@ -83,7 +83,7 @@ class ApiRota {
             idCentroInicio,
             idCentroFim,
             idFuncionario,
-            idFuncionario,
+            idColeta,
             idRota
         ]
         connection.execute(sql, values);
