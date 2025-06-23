@@ -25,7 +25,7 @@ class ApiFuncionarios {
     criarNovoFuncionario(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil, email){
 
         funcionarioValidator.validarCriacao(nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil)
-        funcionarioValidator.validarCPF(cpf)
+        utils.validarCPF(cpf)
 
         const senhaTemporaria = utils.gerarSenhaTemporaria()
 
@@ -71,7 +71,7 @@ class ApiFuncionarios {
     editarFuncionario(id, nome, cpf, rg, telefone, dataNascimento, dataContratacao, estadoCivil, email) {
 
         funcionarioValidator.validarCriacao(nome, rg, telefone, dataNascimento, dataContratacao, estadoCivil)
-        funcionarioValidator.validarCPF(cpf)
+        utils.validarCPF(cpf)
 
         const sql = 'UPDATE funcionarios set '
         + 'Nome = ?, Telefone = ?, CPF = ?, RG = ?, Data_Nascimento = ?, Data_Contratacao = ?, Estado_Civil = ?, Email = ? '
