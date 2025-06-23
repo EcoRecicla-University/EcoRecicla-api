@@ -52,6 +52,37 @@ class Utils {
 
         return true;
     }
+
+    validarCNPJ(cnpj) {
+        cnpj = cnpj.replace(/[^\d]+/g, '');
+
+        if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) {
+            throw new Error('CNPJ deve conter 14 dígitos válidos e não pode ter todos os números iguais');
+        }
+
+        const calcularDigito = (cnpj, pesos) => {
+            let soma = 0;
+            for (let i = 0; i < pesos.length; i++) {
+                soma += parseInt(cnpj.charAt(i)) * pesos[i];
+            }
+            let resto = soma % 11;
+            return resto < 2 ? 0 : 11 - resto;
+        };
+
+        const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        const digito1 = calcularDigito(cnpj, pesos1);
+        if (digito1 !== parseInt(cnpj.charAt(12))) {
+            throw new Error('Dígito verificador 1 do CNPJ inválido');
+        }
+
+        const pesos2 = [6].concat(pesos1);
+        const digito2 = calcularDigito(cnpj, pesos2);
+        if (digito2 !== parseInt(cnpj.charAt(13))) {
+            throw new Error('Dígito verificador 2 do CNPJ inválido');
+        }
+
+        return true;
+    }
 }
 
 

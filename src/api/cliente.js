@@ -1,5 +1,6 @@
 const connection = require('../core/connection.js');
 const clienteValidator = require('../validator/cliente.js')
+const utils = require('../core/utils.js')
 
 const ApiColeta = require('./coleta.js');
 
@@ -44,6 +45,13 @@ class ApiCliente {
     criarNovoCliente(nome, cpf, cnpj, telefone, tipoCliente){
 
         clienteValidator.validarCriacao(nome, cpf, cnpj, telefone, tipoCliente)
+        
+        if(cnpj){
+            utils.validarCNPJ(cnpj)
+        }
+        if(cpf){
+            utils.validarCPF(cpf)
+        }
         
         try{
             const date = new Date()
